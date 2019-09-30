@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Dot App</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="bootstrap/3.4.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/main.css"></link>
+<script	src="ajax/libs/jquery/3.4.1/jquery.js"></script>
+<script	src="bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script src="js/service.js"></script>
+</head>
+<body>
+	<div id="cover-spin"></div>
+	<div id="loginPanel"
+		style="background-image: url(images/dotthome1.jpg); border: 1px solid black; padding-bottom:7px;">
+		<form class="frm" name="loginPanel" method="post">
+			<div class="wrapper fadeInDown">
+				<div class="formContent">
+					<br>
+					<div class="fadeIn first">
+						<img class="logo" src="images\logo.jpg">
+						<hr>
+					</div>
+					<select name="Selection" class="selectClass">
+						<option value="Sales" class="optn">Sales Login</option>
+						<option value="Booking" class="optn">Accounts Login</option>
+						<option value="Admin" selected class="optn">Admin Login</option>
+					</select> 
+					<input type="text" id="login" class="fadeIn second loginText"
+						name="Login" placeholder="login" value="admin"></input> 
+					<input type="password"
+						id="password" class="fadeIn third loginPassword" name="Password"
+						placeholder="password" value="admin"></input> 
+					<input type="button"
+						class="fadeIn fourth loginBtn" onclick="doLogin(this);"
+						value="Login"></input>
+				</div>
+			</div>
+		</form>
+	</div>	
+	<div id="main" style="display:none;">
+		<nav class="navbar navbar-inverse">
+			<div class="container">
+				<img alt="" src="images/head1.jpg">
+			</div>
+			<div class="container-fluid">
+				<ul class="nav navbar-nav">
+					<li id="salTab"><a class="hrefClass" onclick="openMenu(this);">Sales</a></li>
+					<li id="acctTab"><a class="hrefClass">Accounts</a></li>
+					<li id="pkgTab"><a class="hrefClass" onclick="openMenu(this);">Package</a></li>
+					<li id="stfTab" class="active"><a class="hrefClass" onclick="openMenu(this);">Staff</a></li>
+					<li id="invTab"><a class="hrefClass" onclick="openMenu(this);">Invoice</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a class="hrefClass" onclick="logoutLogin(this);"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div id="pkg" class="text-center" style="display:none;">
+			<div class="row content">
+				<div class="col-md-2 sidenav">
+					<p>
+						<button type="button" onclick="addPkg()" class="btn btn-link">Add
+							Package</button>
+					</p>
+					<p>
+						<button id="enq" type="button" onclick="enquiryPkg()" class="btn btn-link">Enquiry
+							Packages</button>
+					</p>
+					<p>
+						<button type="button" onclick="cc()" class="btn btn-link">Delete
+							Package</button>
+					</p>
+				</div>
+
+				<div class="col-md-10 text-left" id="pkgEntry" style="display:none;">
+					<div class="table-responsive" name="packagesTbl">
+						<form name="packages" method="post">
+							<table class="New_package">
+								<tr>
+									<th id="h" align="right">New Package</th>
+									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<button type="button" class="ID1">
+											<span class="glyphicon glyphicon-refresh"></span> CLEAR
+										</button>
+										<button type="button" class="ID1" class="close" onclick="closeBox('pkgEntry');">
+											<span class="glyphicon glyphicon-remove" id="ap"></span>
+											CLOSE
+										</button>
+									</th>
+								</tr>
+								<tr>
+									<td><label>Tour Id</label></td>
+									<td>: <input type="number" name="Tour_Name" required></td>
+								</tr>
+								<tr>
+									<td><label>Gst Number</label></td>
+									<td>: <select name="Gst_Number" style="width: 180px;">
+											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
+											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+									</select> &nbsp &nbsp <input type="number" name="Per" value="4"
+										style="width: 40px; text-align: center;">&nbsp%
+									</td>
+								</tr>
+								<tr>
+									<td><label>Date of Travel </label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr>
+								<tr>
+									<td><label>No Of Passengers</label></td>
+									<td>: <input type="number" name="No_Of_Passengers"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>No Of Adult</label></td>
+									<td>: <input type="number" name="No_Of_Adult" required></td>
+								</tr>
+								<tr>
+									<td><label>No Of Child</label></td>
+									<td>: <input type="number" name="No_Of_Child" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Tour Cost Per Adult </label></td>
+									<td>: <input type="number" name="Tour_Cost_Per_Adult"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>Tour Cost Per Adult With Twin Share
+											Base</label></td>
+									<td>: <input type="number"
+										name="Tour_Cost_Per_Adult_With_Twin_Share_Base" required></td>
+								</tr>
+								<tr>
+									<td><label>Tour Cost Per Adult With Triple Share
+											Base </label></td>
+									<td>: <input type="number"
+										name="Tour_Cost_Per_Adult_With_Triple_Share_Base" required></td>
+								</tr>
+								<tr>
+									<td><label>Child With Bed</label></td>
+									<td>: <input type="number" name="Child_With_Bed" required></td>
+								</tr>
+								<tr>
+									<td><label>Child Without Bed</label></td>
+									<td>: <input type="number" name="Child_Without_Bed"
+										required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Infant Cost</label></td>
+									<td>: <input type="number" name="Infant_Cost" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>No Of Days</label></td>
+									<td>: <input type="number" name="No_Of_Days" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Countries Visiting</label></td>
+									<td>: <input type="text" name="Countries_Visiting"
+										required>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<hr>
+										<label><h2>Optional Tour</h2></label>
+									<hr>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Description</label></td>
+									<td>: <input type="text" name="Description" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Per Child</label></td>
+									<td>: <input type="number" name="Per_Child" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Per Adult</label></td>
+									<td>: <input type="number" name="Per_Adult" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Per Infant</label></td>
+									<td>: <input type="number" name="Per_Infant" required>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" align="center">
+										<button id="pkgBtn" type="button" class="btn btn-info"
+											style="background-color color: #FF4500;"
+											onclick="submitPackage();">Create</button>
+										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											style="background-color color: #FF4500;display:none;"
+											onclick="submitPackage();">Delete</button>	
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+				</div>
+				<div id="enqPackages" style="display:none;">
+					<div class="col-md-10 text-left">
+						<form style="margin-top: 20px;">
+							<label>Enter package name:</label> <input type="text"
+								name="deletepackage" required style="margin-right: 20px;">
+							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
+							<hr id="dhr">
+							<p id="showAllPackages"></p>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-10 text-left" id="delPkg" style="display:none;">
+					<form style="margin-top: 20px;">
+						<label>Enter package name:</label> <input type="text"
+							name="deletepackage" required style="margin-right: 20px;">
+						<button type="submit" class="btn btn-info">Delete</button>
+
+
+						<hr id="dhr">
+
+
+					</form>
+
+
+
+				</div>
+			</div>		
+		</div>
+		<div id="stf" class="container-fluid text-center" style="display:none;">
+			<div class="row content">
+				<div class="col-md-2 sidenav">
+					<p>
+						<button type="button" onclick="addStaff('Add Staff')" class="btn btn-link">New
+							Staff</button>
+					</p>
+					<p>
+						<button id="enq" type="button" onclick="showViewStaff()"
+							class="btn btn-link">View Staff</button>
+					</p>
+					<p>
+						<button type="button" onclick="cc()" class="btn btn-link">Delete/Update
+							Staff</button>
+					</p>
+
+
+
+				</div>
+				<div class="col-md-10 text-left" id="add" style="display:none;">
+					<div class="table-responsive" name="packagesTbl">
+						<form name="staff" method="post">
+							<table class="New_package">
+								<tr>
+									<th id="h" align="right">New Package</th>
+									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<button type="button" class="ID1">
+											<span class="glyphicon glyphicon-refresh"></span> CLEAR
+										</button>
+										<button type="button" class="ID1" class="close" onclick="closeBox('pkgEntry');">
+											<span class="glyphicon glyphicon-remove" id="ap"></span>
+											CLOSE
+										</button>
+									</th>
+								</tr>
+								<tr>
+									<td><label>Staff Id</label></td>
+									<td>: <input type="number" name="staff_id" required></td>
+								</tr>
+								<!-- <tr>
+									<td><label>Gst Number</label></td>
+									<td>: <select name="Gst_Number" style="width: 180px;">
+											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
+											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+									</select> &nbsp &nbsp <input type="number" name="Per" value="4"
+										style="width: 40px; text-align: center;">&nbsp%
+									</td>
+								</tr> -->
+								<tr>
+									<td><label>Password</label></td>
+									<td>: <input type="number" name="Password"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>Birthday </label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr>
+								<tr>
+									<td><label>First Name</label></td>
+									<td>: <input type="number" name="No_Of_Passengers"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>Last Name</label></td>
+									<td>: <input type="number" name="No_Of_Adult" required></td>
+								</tr>
+								<tr>
+									<td><label>Phone No</label></td>
+									<td>: <input type="number" name="No_Of_Child" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Branch </label></td>
+									<td>: <select id="branch" class="l1"
+										name="Branch" required>
+											<option type="text"></option>
+
+											<option value="Andhra Pradesh">Andhra Pradesh</option>
+											<option value="Arunachal Pradesh">Arunachal Pradesh</option>
+											<option value="Assam">Assam</option>
+											<option value="Bihar">Bihar</option>
+											<option value="Chhattisgarh">Chhattisgarh</option>
+											<option value="Goa">Goa</option>
+											<option value="Gujarat">Gujarat</option>
+											<option value="Haryana">Haryana</option>
+											<option value="Himachal">Himachal Pradesh</option>
+											<option value="Jammu & Kashmir">Jammu & Kashmir</option>
+											<option value="Jharkhand">Jharkhand</option>
+											<option value="Karnataka">Karnataka</option>
+											<option value="Kerala">Kerala</option>
+											<option value="Madhya Pradesh">Madhya Pradesh</option>
+											<option value="Maharashtra">Maharashtra</option>
+											<option value="Manipur">Manipur</option>
+											<option value="Meghalaya">Meghalaya</option>
+											<option value="Mizoram">Mizoram</option>
+											<option value="Nagaland">Nagaland</option>
+											<option value="Odisha">Odisha</option>
+											<option value="Punjab">Punjab</option>
+											<option value="Rajasthan">Rajasthan</option>
+											<option value="Sikkim">Sikkim</option>
+											<option value="Tamil Nadu">Tamil Nadu</option>
+											<option value="Telangana">Telangana</option>
+											<option value="Uttarakhand">Uttarakhand</option>
+											<option value="Uttar Pradesh">Uttar Pradesh</option>
+											<option value="West Bengal">West Bengal</option>
+
+									</select></td>
+								</tr>
+								<tr>
+									<td><label>Address</label></td><td></td>
+								</tr>
+								<tr>
+									<td><label>Door no/House no </label></td>
+									<td>: <input type="number"
+										name="Tour_Cost_Per_Adult_With_Triple_Share_Base" required></td>
+								</tr>
+								<tr>
+									<td><label>Street name</label></td>
+									<td>: <input type="number" name="Child_With_Bed" required></td>
+								</tr>
+								<tr>
+									<td><label>City</label></td>
+									<td>: <input type="number" name="Child_Without_Bed"
+										required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>State</label></td>
+									<td>: <input type="number" name="Infant_Cost" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Pin code</label></td>
+									<td>: <input type="number" name="No_Of_Days" required>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" align="center">
+										<button type="button" class="btn btn-info"
+											style="background-color color: #FF4500;"
+											onclick="submitPackage();">Create</button>
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-10 text-left" id="view" style="display:none;">
+					<div id="viewStaff" style="margin-top:30px;">
+						<label>Enter Staff name:</label> <input type="text"
+								name="findStaff" required style="margin-right: 20px;">
+							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
+							<hr id="dhr">
+						<p id="showAllStaff"></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="sal" class="container-fluid text-center" style="display:none;">
+			<div class="row content">
+				<div class="col-md-1 sidenav">
+					<p>
+						<button type="button" id="enq" onclick="loadEnqSales();" class="btn btn-link">Enquiry</button>
+					</p>
+				</div>
+				<div class="col-md-11 text-left" id="aa">
+					<div class="table-responsive">
+						<div class="col-md-10 text-left" id="view">
+							<form style="margin-top: 20px;">
+								<label>Enter Customer name:</label> <input type="text"
+									name="deletepackage" required style="margin-right: 20px;">
+								<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
+								<hr id="dhr">
+								<p id="showAllSales"></p>
+							</form>
+						</div>
+						<hr>
+						<input type="button" value="Print" class="btn btn-info"
+							style="background-color color: #FF4500; margin-left: 500px;">
+						<input type="button" value="Export" class="btn btn-info"
+							style="background-color color: #FF4500; margin-left: 200px;">
+						<hr>
+					</div>
+				</div>
+
+				<!-- <div class="col-sm-11 text-left" id="bb">hello world!...</div> -->
+
+			</div>
+		</div>
+		<div id="inv" style="display:none;">
+			<table style="width: 100%";>
+				<tr>
+					<th style="text-align: end"><img class="hello"
+						src="img-1.jpg" alt="hiii"></th>
+					<th style="padding-right: 80px;"><img class="hellooo"
+						src="img-2.png" alt=""></th>
+				</tr>
+			</table>
+			<div class="matter">
+
+				<table style="width: 100%";>
+					<tr>
+						<th><br></br> No: 14373925, GST NO: AP-37BGXPS3317QIZ9</th>
+					</tr>
+					<tr>
+						<th>Vijayawada Branch: 40-6-11, Ground Floor, Meenakshi
+							Towers, Opp: Sub way, Hotel Fortune Muralipark road,</th>
+					</tr>
+					<tr>
+						<th>Mogalrajpuram, Vijayawada-520010. Contact: 77996-83666.</th>
+					</tr>
+					<tr>
+						<th>CIN: U63090TG2018PTC126379; email:
+							dottholidaysvga@gmail.com.</th>
+					</tr>
+
+
+				</table>
+				<hr id="dhr">
+			</div>
+			<div id="hari">
+
+				<h3 style="width: 190px; height: 50px;">INVOICE</h3>
+			</div>
+			<div id="sh">
+				<h3>BILL</h3>
+			</div>
+			<div class="main">
+				<div class="bro">
+					<center>
+						<table style="width: 95%">
+							<tr>
+								<td>Invoice No: DTT 257</td>
+								<td style="text-align: end">Date: 06-08-2019</td>
+							</tr>
+							<tr>
+								<td>GST No: 37BGXPS3317QIZ9<br></br>
+								</td>
+								<td style="text-align: end">Place: Vijayawada<br></br>
+								</td>
+							</tr>
+						</table>
+					</center>
+				</div>
+				<div class="ccc">
+
+					<table style="width: 100%">
+						<tr>
+							<td>TO:Mr.G.KUTESWARA RAO Garu & Family (2 pax)</td>
+							<td style="text-align: end">DST: EUROPE &INDIA</td>
+						</tr>
+						<tr>
+							<td>DEPUTY MANAGER,</td>
+							<td></td>
+						</tr>
+						<td>STATE BANK OF INDIA,</td>
+						<td></td>
+						</tr>
+						<tr>
+							<td>37AAACS8577K1ZO</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>ADMNISTRATIVE OFFICE,</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>VIJAYAWADA.</td>
+							<td></td>
+						</tr>
+
+					</table>
+				</div>
+				<div class="ddd">
+					<table style="width: 100%">
+						<tr>
+							<th>PARTICULARS
+							</td>
+							<th>AMOUNT
+							</td>
+
+						</tr>
+						<tr>
+							<td><br></br>TRANSPORTATION CHARGES FOR 2 PAX IN EUROPE</td>
+							<td style="text-align: center"><br></br>87,450.00</td>
+
+						</tr>
+
+						<tr>
+							<td>VOUCHER DATED: 23-07-2019<br></br>
+							</td>
+							<td></td>
+
+						</tr>
+
+						<tr>
+							<td>GST 5%<br></br>
+							</td>
+							<td style="text-align: center">4,372.00<br></br>
+							</td>
+
+						</tr>
+
+						</tr>
+						<tr>
+							<td>TOTAL AIR FARES OF 2 PAX<br></br>
+							<br></br>
+							</td>
+							<td style="text-align: center">1,68,178.00 <br></br>
+							<br></br>
+							</td>
+
+						</tr>
+
+						<tr>
+							<td>Grand Total in Words:</td>
+							<td style="text-align: center">2,60,000.00</td>
+
+						</tr>
+						<tr>
+							<td>Two lakhs sixty thousand rupees only.</td>
+							<td></td>
+						</tr>
+
+					</table>
+				</div>
+				<div class="last">
+					<h3>PAYMENT DETAILS:</h3>
+					<P>Paid the tour cost Per Pax 1, 30,000/- , total Pax 2 =
+						2,60,000/- by cheque and ac transfer/cash.</P>
+					<p>
+						<b>THANKING YOU AND ASSURING YOU OF OUR BEST SRVICES AT ALL
+							TIMES.</b>
+					</p>
+				</div>
+				<div class="footer">
+					<p>DIRECTION OF TRAVEL TOURS</p>
+					<P>
+						CASH/CHEQUE:<b> 2,60,000/-</b>
+					</P>
+					<P>RECEIVED</P>
+					<P>VIJAYAWADA</P>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</body>
+<script src="js/controller.js"></script>
+</html>
+
