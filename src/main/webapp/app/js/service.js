@@ -5,7 +5,7 @@ var ApiService = {
 		ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
 		},
 	//backEndUrl : 'http://dotapp-dotapp.apps.ca-central-1.starter.openshift-online.com',
-	backEndUrl : '',
+	backEndUrl : '/ROOT',
 	post : function(requestData, tableId, url, successCallback, errorCallback){
 		$('#cover-spin').show(0);
 		var request = {};
@@ -15,6 +15,7 @@ var ApiService = {
 		for(var idx=0; idx<requestData.length; idx++){
 			var packageItem = requestData[idx];
 			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
+				if(packageItem['name'].trim() !== ""){
 				if(count>0){
 					keyElems +=","+packageItem['name'];
 					tokenElems += ",$"+packageItem['name'];
@@ -24,6 +25,7 @@ var ApiService = {
 				}
 				count++;
 				request[packageItem['name']] = packageItem['value'];
+				}
 			}
 		}
 		var query = "INSERT INTO "+tableId+"("+keyElems+") VALUES ("+tokenElems+")";
@@ -161,6 +163,12 @@ function createTableFromJSON(tableId, myBooks, rowCallback, visibleCols) {
         divContainer.innerHTML = "";
         divContainer.appendChild(table);
     }
+function buildMenu(menuItems){
+	for(var idx=0; idx<menuItems.length; idx++){
+		  var item = menuItems[idx];
+		  $('#topMenu').append('<li id="'+item.id+'Tab"><a class="hrefClass" onclick="openMenu(this);">'+item.desc+'</a></li>');
+	}
+}
 var myBooks = [
             {
                 "Tour Id": "1",
