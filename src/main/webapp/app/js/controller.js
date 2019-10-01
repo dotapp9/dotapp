@@ -109,7 +109,11 @@
 	  $(id+' #add #h').text(lblHdr);
 	  for(var key in tableData){
 		  var elemId = 'input[name='+key+']';
-		  $(id+' #add '+elemId).val(tableData[key]);
+		  if($(id+' #add '+elemId).length > 0){
+			  $(id+' #add '+elemId).val(tableData[key]);
+		  }else if($(id+' #add select[name='+key+']').length > 0){
+			  $(id+' #add select[name='+key+'] option[value='+tableData[key]+']').attr('selected', 'selected');
+		  }
 		  $(id+' #add #addBtn').text('Modify');
 		  $(id+' #add #delBtn').show();
 	  }
@@ -121,20 +125,32 @@
   function showViewStaff(){
 	$('#stf #add').hide();
 	$('#stf #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sBirthDate, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode from staff', '/api/1/staff', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sBirthDate, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllStaff', staffData, function(row, tableData){
-		addStaff("Staff Details");
-		addStfFillEntry(tableData[row.rowIndex-1]);
-		$('#stf #add').show();
+		$('#stf #newBtn').click();
+		addFillEntry('#stf', tableData[row.rowIndex-1], "Staff Details");
 		$('#stf #enq').hide();
 	});
 	}, function(responseData, status){
 		
 	});
 }
+  function loadBranchMaster(id){
+		if($(id+' #sBranch').prop('options').length == 0){
+			ApiService.getQuery([], 'select stateName, stateDesc from statemaster', '/api/1/statemaster', function(responseData, status){
+				for(var idx=0; idx<responseData.length; idx++){
+					var item = responseData[idx];
+					$(id+' #sBranch').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+					$(id+' #sState').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+				}
+			},function(responseData, status){
+				
+			});
+		}	
+	}
 function loadStateMaster(id){
-	if($(id+' #sBranch').prop('options').length == 0){
+	if($(id+' #sState').prop('options').length == 0){
 		ApiService.getQuery([], 'select stateName, stateDesc from statemaster', '/api/1/statemaster', function(responseData, status){
 			for(var idx=0; idx<responseData.length; idx++){
 				var item = responseData[idx];
@@ -170,43 +186,7 @@ function loadCityMaster(id){
 		});	
 	}	
 }
-/*function addStaff(hdrLbl){
-	$('#stf #view').hide();
-	$('#stf #add #h').text(hdrLbl);
-	if($('#roleName').prop('options').length == 0){
-	ApiService.getQuery([], 'select roleName, roleDesc from rolemaster', '/api/1/rolemaster', function(responseData, status){
-		for(var idx=0; idx<responseData.length; idx++){
-			var item = responseData[idx];
-			$('#roleName').append('<option value="'+item.roleName+'">'+item.roleDesc+'</option>');
-		}
-	},function(responseData, status){
-		
-	});
-	}
-	if($('#sBranch').prop('options').length == 0){
-		ApiService.getQuery([], 'select stateName, stateDesc from statemaster', '/api/1/statemaster', function(responseData, status){
-			for(var idx=0; idx<responseData.length; idx++){
-				var item = responseData[idx];
-				$('#sBranch').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
-				$('#sState').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
-			}
-		},function(responseData, status){
-			
-		});
-	}
-	if($('#sCity').prop('options').length == 0){
-		ApiService.getQuery([], 'select cityName, cityDesc from citymaster', '/api/1/citymaster', function(responseData, status){
-			for(var idx=0; idx<responseData.length; idx++){
-				var item = responseData[idx];
-				$('#sCity').append('<option value="'+item.cityName+'">'+item.cityDesc+'</option>')
-			}
-		},function(responseData, status){
-			
-		});	
-	}
-	$('#stf #add').show();
-	
-}*/
+
 function loadEnqSales(){
 	var salesData = myBooks;
 	createTableFromJSON('showAllSales', salesData, function(row, tableData){
@@ -272,10 +252,22 @@ function submitSalesEnq(){
 		  alert("Sales Enquiry Creation failed.");
 	  });	
 }
+function loadPackageIds(){
+	if($('#booking #Tour_Name').prop('options').length == 0){
+		ApiService.getQuery([], 'select Tour_Id, Tour_Name from tour_package', '/api/1/tour_package', function(responseData, status){
+			for(var idx=0; idx<responseData.length; idx++){
+				var item = responseData[idx];
+				$('#booking #Tour_Name').append('<option value="'+item.Tour_Id+'">'+item.Tour_Name+'</option>');
+			}
+		},function(responseData, status){
+			
+		});
+	}	  
+}
 function bookingDetails(){
 	$('#booking #add').hide();
 	$('#booking #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales_enq', '/api/1/sales_enq', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllBooking', staffData, function(row, tableData){
 		addFillEntry('#booking', tableData[row.rowIndex-1], "Booking Details");
@@ -289,7 +281,7 @@ function bookingDetails(){
 function pmtDetails(){
 	$('#pmt #add').hide();
 	$('#pmt #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales_enq', '/api/1/sales_enq', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllPayments', staffData, function(row, tableData){
 		addFillEntry('#pmt', tableData[row.rowIndex-1], "Payment Details");
