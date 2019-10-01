@@ -356,7 +356,7 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button type="button" onclick="openSubMenu('booking','add','enq');" class="btn btn-link">New Booking</button>
+						<button id="newBtn" type="button" onclick="openSubMenu('booking','add','enq');loadPackageIds();loadStateMaster('#booking');loadCityMaster('#booking');" class="btn btn-link">New Booking</button>
 					</p>
 					<p>
 						<button id="enqBtn" type="button" onclick="bookingDetails()" class="btn btn-link">View	Booking</button>
@@ -385,11 +385,11 @@
 								</tr>
 								<tr>
 									<td><label>Select Package</label></td>
-									<td>: <select name="Tour_Name" style="width: 180px;">
-											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+									<td>: <select id="Tour_Name" name="Tour_Name" style="width: 180px;">
+											<!--<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
 											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
 											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
-											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>-->
 									</select>
 									</td>
 								</tr>
@@ -650,7 +650,7 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button type="button" onclick="openSubMenu('stf','add','enq');loadRoleMaster('#stf');loadStateMaster('#stf');loadCityMaster('#stf');" class="btn btn-link">New
+						<button id="newBtn" type="button" onclick="openSubMenu('stf','add','enq');loadRoleMaster('#stf');loadStateMaster('#stf');loadCityMaster('#stf');" class="btn btn-link">New
 							Staff</button>
 					</p>
 					<p>
@@ -783,34 +783,6 @@
 				</div>
 			</div>
 		</div>
-<!-- 		<div id="sal" class="container-fluid text-center" style="display:none;">
-			<div class="row content">
-				<div class="col-md-1 sidenav">
-					<p>
-						<button type="button" id="enqBtn" onclick="loadEnqSales();" class="btn btn-link">Enquiry</button>
-					</p>
-				</div>
-				<div class="col-md-11 text-left" id="aa">
-					<div class="table-responsive">
-						<div class="col-md-10 text-left" id="view">
-							<form style="margin-top: 20px;">
-								<label>Enter Customer name:</label> <input type="text"
-									name="deletepackage" required style="margin-right: 20px;">
-								<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
-								<hr id="dhr">
-								<p id="showAllSales"></p>
-							</form>
-						</div>
-						<hr>
-						<input type="button" value="Print" class="btn btn-info"
-							style="background-color color: #FF4500; margin-left: 500px;">
-						<input type="button" value="Export" class="btn btn-info"
-							style="background-color color: #FF4500; margin-left: 200px;">
-						<hr>
-					</div>
-				</div>
-			</div>
-		</div> -->
 		<div id="inv" style="display:none;">
 			<table style="width: 100%;">
 				<tr>
