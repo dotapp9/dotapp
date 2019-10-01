@@ -22,7 +22,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +43,7 @@ public class DotEndpoint {
 	public ResponseEntity<List<Map<String, String>>> doAuth(Principal principal, @PathVariable String version, @RequestHeader Map<String, String> rqHeaders, @RequestBody Map<String, String> requestBody, HttpSession httpSession, HttpServletRequest request)throws IOException {
 		List<Map<String, String>> result = doBodyDelegate(principal, "auth", rqHeaders, requestBody, httpSession);
 		if(!result.isEmpty()) {
-			httpSession.setAttribute("sId", result.get(0).get("sId"));
+			httpSession.setAttribute("loggedInUser", result.get(0).get("sId"));
 			httpSession.setAttribute("roleName", result.get(0).get("roleName"));
 		}
 		return new ResponseEntity<List<Map<String,String>>>(result, addHeaders(httpSession, request), HttpStatus.OK);
@@ -56,7 +55,6 @@ public class DotEndpoint {
 		List<Map<String, String>> result =  doBodyDelegate(principal, serviceId, rqHeaders, requestBody, httpSession);
 		return new ResponseEntity<List<Map<String,String>>>(result, addHeaders(httpSession, null), HttpStatus.OK);
 	}	
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = Constants.HEALTH_PATH, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> doHealth(Principal principal, @PathVariable String version, HttpServletRequest req)throws IOException {
 		return new ResponseEntity<String>("Ready", HttpStatus.OK);
@@ -77,6 +75,8 @@ public class DotEndpoint {
 				IndexWrapper wrapper = indexes.get(0);
 				int idx = wrapper.getStart();
 				String value = requestBody.get(searchParam);
+				if("loggedInUser".equals(searchParam))
+					value = (String)httpSession.getAttribute("loggedInUser");
 				attrMap.put(idx, value);
 			}
 		}
@@ -108,33 +108,41 @@ public class DotEndpoint {
 					resultList.add(resultMap);
 				}
 			}else {
-				int count = pstmt.executeUpdate();
+				int count = 0;
+				try {
+					dbcon.setAutoCommit(false);
+					count = pstmt.executeUpdate();
+					dbcon.commit();
+				}catch (Exception ex) {
+					try {
+						if(dbcon != null)
+							dbcon.rollback();
+					} catch (SQLException e) {
+						//Do Nothing
+					}
+				}
 				HashMap<String, String> resultMap = new HashMap<String, String>();
 				resultMap.put("record_count", String.valueOf(count));
 				resultList.add(resultMap);
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
-			try {
-				if(dbcon != null)
-					dbcon.rollback();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}finally {
 			mgr.close(null, pstmt, dbcon);
 		}
 		return resultList;
 	}
 	private HttpHeaders addHeaders(HttpSession httpSession, HttpServletRequest request) {
+		HttpHeaders headers = new HttpHeaders();
 		if(request != null) {
 			httpSession.invalidate();
 			httpSession = request.getSession(true);
+			String reqId = UUID.randomUUID().toString();
+			httpSession.setAttribute("siteid", reqId);
+			headers.set("siteid", reqId);
+		}else {
+			headers.set("siteid", (String)httpSession.getAttribute("siteid"));
 		}
-		HttpHeaders headers = new HttpHeaders();
-		String reqId = UUID.randomUUID().toString();
-		httpSession.setAttribute("siteid", reqId);
-		headers.set("siteid", reqId);
 		return headers;
 	}
 	private boolean isSecured(Map<String, String> rqHeaders, HttpSession httpSession) {

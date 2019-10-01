@@ -11,6 +11,7 @@ import org.tharak.core.util.DataSourceMgr;
 public class DottConfig implements WebMvcConfigurer{
 	@Bean
 	public DataSourceMgr getDataSourceMgr(DataSource ds) {
+		
 		DataSourceMgr mgr = DataSourceMgr.getMgr();
 		mgr.setDataSource(ds);
 		return mgr;
