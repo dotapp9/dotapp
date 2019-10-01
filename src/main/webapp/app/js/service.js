@@ -5,7 +5,7 @@ var ApiService = {
 		ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
 		},
 	//backEndUrl : 'http://dotapp-dotapp.apps.ca-central-1.starter.openshift-online.com',
-	backEndUrl : '/ROOT',
+	backEndUrl : '',
 	post : function(requestData, tableId, url, successCallback, errorCallback){
 		$('#cover-spin').show(0);
 		var request = {};
