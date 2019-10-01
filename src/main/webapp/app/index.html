@@ -45,14 +45,10 @@
 				<img alt="" src="images/head1.jpg">
 			</div>
 			<div class="container-fluid">
-				<ul class="nav navbar-nav">
-					<li id="salTab"><a class="hrefClass" onclick="openMenu(this);">Sales</a></li>
-					<li id="acctTab"><a class="hrefClass">Accounts</a></li>
-					<li id="pkgTab"><a class="hrefClass" onclick="openMenu(this);">Package</a></li>
-					<li id="stfTab" class="active"><a class="hrefClass" onclick="openMenu(this);">Staff</a></li>
-					<li id="invTab"><a class="hrefClass" onclick="openMenu(this);">Invoice</a></li>
+				<ul class="nav navbar-nav" id="topMenu">
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
+					<li><a><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;<span id="userName">User</span></a></li>
 					<li><a class="hrefClass" onclick="logoutLogin(this);"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
 				</ul>
 			</div>
@@ -61,11 +57,11 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button type="button" onclick="addPkg()" class="btn btn-link">Add
+						<button id="newBtn" type="button" onclick="openSubMenu('pkg','add','enq');" class="btn btn-link">Add
 							Package</button>
 					</p>
 					<p>
-						<button id="enq" type="button" onclick="enquiryPkg()" class="btn btn-link">Enquiry
+						<button id="enqBtn" type="button" onclick="enquiryPkg()" class="btn btn-link">Enquiry
 							Packages</button>
 					</p>
 					<p>
@@ -74,8 +70,8 @@
 					</p>
 				</div>
 
-				<div class="col-md-10 text-left" id="pkgEntry" style="display:none;">
-					<div class="table-responsive" name="packagesTbl">
+				<div class="col-md-10 text-left" id="add" style="display:none;">
+					<div class="table-responsive">
 						<form name="packages" method="post">
 							<table class="New_package">
 								<tr>
@@ -84,7 +80,7 @@
 										<button type="button" class="ID1">
 											<span class="glyphicon glyphicon-refresh"></span> CLEAR
 										</button>
-										<button type="button" class="ID1" class="close" onclick="closeBox('pkgEntry');">
+										<button type="button" class="ID1" class="close" onclick="closeBox2($('#pks #add'), enquiryPkg);">
 											<span class="glyphicon glyphicon-remove" id="ap"></span>
 											CLOSE
 										</button>
@@ -101,8 +97,8 @@
 											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
 											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
 											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
-									</select> &nbsp &nbsp <input type="number" name="Per" value="4"
-										style="width: 40px; text-align: center;">&nbsp%
+									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
+										style="width: 40px; text-align: center;">&nbsp;%
 									</td>
 								</tr>
 								<tr>
@@ -207,7 +203,7 @@
 						</form>
 					</div>
 				</div>
-				<div id="enqPackages" style="display:none;">
+				<div id="enq" style="display:none;">
 					<div class="col-md-10 text-left">
 						<form style="margin-top: 20px;">
 							<label>Enter package name:</label> <input type="text"
@@ -218,7 +214,7 @@
 						</form>
 					</div>
 				</div>
-				<div class="col-md-10 text-left" id="delPkg" style="display:none;">
+				<div class="col-md-10 text-left" id="delete" style="display:none;">
 					<form style="margin-top: 20px;">
 						<label>Enter package name:</label> <input type="text"
 							name="deletepackage" required style="margin-right: 20px;">
@@ -235,15 +231,430 @@
 				</div>
 			</div>		
 		</div>
+		<div id="sal" class="text-center" style="display:none;">
+			<div class="row content">
+				<div class="col-md-2 sidenav">
+					<p>
+						<button type="button" onclick="openSubMenu('sal','add','enq');" class="btn btn-link">New Enquiry</button>
+					</p>
+					<p>
+						<button id="enqBtn" type="button" onclick="enquiryDetails()" class="btn btn-link">View	Enquiry</button>
+					</p>
+					<p>
+						<button type="button" onclick="cc()" class="btn btn-link">Delete Enquiry</button>
+					</p>
+				</div>
+
+				<div class="col-md-10 text-left" id="add" style="display:none;">
+					<div class="table-responsive">
+						<form name="salesinq" method="post">
+							<input type="hidden" name="sId" value="test"></input>
+							<table class="New_package">
+								<tr>
+									<th id="h" align="right">New Equiry</th>
+									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<button type="button" class="ID1">
+											<span class="glyphicon glyphicon-refresh"></span> CLEAR
+										</button>
+										<button type="button" class="ID1" class="close" onclick="closeBox2($('#sal #add'), enquiryDetails);">
+											<span class="glyphicon glyphicon-remove" id="ap"></span>
+											CLOSE
+										</button>
+									</th>
+								</tr>
+								<tr>
+									<td><label>DATE_OF_QUERY</label></td>
+									<td>: <input type="date" name="date_of_query" required></td>
+								</tr>
+<!-- 								<tr>
+									<td><label>Gst Number</label></td>
+									<td>: <select name="Gst_Number" style="width: 180px;">
+											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
+											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
+										style="width: 40px; text-align: center;">&nbsp;%
+									</td>
+								</tr>
+								<tr>
+									<td><label>date of Travel </label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr> -->
+								<tr>
+									<td><label>CLIENT_NAME</label></td>
+									<td>: <input type="text" name="client_name"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>CONTACT_NUMBER</label></td>
+									<td>: <input type="number" name="contact_number" required></td>
+								</tr>
+								<tr>
+									<td><label>EMAIL_ID</label></td>
+									<td>: <input type="text" name="email_id" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>DESTINATION</label></td>
+									<td>: <input type="text" name="destination"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>DATE_OF_TRAVEL</label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr>
+								<tr>
+									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
+									<td>: <input type="number"
+										name="current_status_of_the_query" required></td>
+								</tr>
+								<tr>
+									<td><label>EXPECTED_CLOSURE_DATE</label></td>
+									<td>: <input type="date" name="expected_closure_date" required></td>
+								</tr>
+								<tr>
+									<td><label>REMARKS</label></td>
+									<td>: <input type="text" name="remarks" required></td>
+								</tr>
+								<tr>
+									<td colspan="2" align="center">
+										<button id="pkgBtn" type="button" class="btn btn-info"
+											style="background-color color: #FF4500;"
+											onclick="submitSalesEnq();">Create</button>
+										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											style="background-color color: #FF4500;display:none;"
+											onclick="submitPackage();">Delete</button>	
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+				</div>
+				<div id="enq" style="display:none;">
+					<div class="col-md-10 text-left">
+						<form style="margin-top: 20px;">
+							<label>Enter package name:</label> <input type="text"
+								name="deletepackage" required style="margin-right: 20px;">
+							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
+							<hr id="dhr">
+							<p id="showAllSalesInq"></p>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-10 text-left" id="delete" style="display:none;">
+					<form style="margin-top: 20px;">
+						<label>Enter package name:</label> <input type="text"
+							name="deletepackage" required style="margin-right: 20px;">
+						<button type="submit" class="btn btn-info">Delete</button>
+						<hr id="dhr">
+					</form>
+				</div>
+			</div>		
+		</div>
+		<div id="booking" class="text-center" style="display:none;">
+			<div class="row content">
+				<div class="col-md-2 sidenav">
+					<p>
+						<button type="button" onclick="openSubMenu('booking','add','enq');" class="btn btn-link">New Booking</button>
+					</p>
+					<p>
+						<button id="enqBtn" type="button" onclick="bookingDetails()" class="btn btn-link">View	Booking</button>
+					</p>
+					<p>
+						<button type="button" onclick="cc()" class="btn btn-link">Delete Booking</button>
+					</p>
+				</div>
+
+				<div class="col-md-10 text-left" id="add" style="display:none;">
+					<div class="table-responsive">
+						<form name="bookinginq" method="post">
+							<input type="hidden" name="sId" value="test"></input>
+							<table class="New_package">
+								<tr>
+									<th id="h" align="right">New Booking</th>
+									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<button type="button" class="ID1">
+											<span class="glyphicon glyphicon-refresh"></span> CLEAR
+										</button>
+										<button type="button" class="ID1" class="close" onclick="closeBox2($('#booking #add'), bookingDetails);">
+											<span class="glyphicon glyphicon-remove" id="ap"></span>
+											CLOSE
+										</button>
+									</th>
+								</tr>
+								<tr>
+									<td><label>Select Package</label></td>
+									<td>: <select name="Tour_Name" style="width: 180px;">
+											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
+											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+									</select>
+									</td>
+								</tr>
+<!-- 								<tr>
+									<td><label>CLIENT_NAME</label></td>
+									<td>: <input type="date" name="client_name" required></td>
+								</tr> -->
+<!-- 								<tr>
+									<td><label>Gst Number</label></td>
+									<td>: <select name="Gst_Number" style="width: 180px;">
+											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
+											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
+										style="width: 40px; text-align: center;">&nbsp;%
+									</td>
+								</tr>
+								<tr>
+									<td><label>date of Travel </label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr> -->
+								<tr>
+									<td><label>Client Name</label></td>
+									<td>: <input type="text" name="client_name"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>Contact Number</label></td>
+									<td>: <input type="number" name="contact_number" required></td>
+								</tr>
+								<tr>
+									<td><label>Email ID</label></td>
+									<td>: <input type="text" name="email_id" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Destination</label></td>
+									<td>: <input type="text" name="destination"
+										required></td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<hr>
+										<label><h3>Address</h3></label>
+									<hr>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Door no/House no </label></td>
+									<td>: <input type="text"
+										name="sHno" required></td>
+								</tr>
+								<tr>
+									<td><label>Street name</label></td>
+									<td>: <input type="text" name="sStreet" required></td>
+								</tr>
+								<tr>
+									<td><label>City</label></td>
+									<td>: <select id="sCity" class="l1"
+										name="sCity" required>
+									</select>
+									</td>
+								</tr>
+								<tr>
+									<td><label>State</label></td>
+									<td>: <select id="sState" class="l1"
+										name="sState" required>
+									</select>
+									</td>
+								</tr>
+								<tr>
+									<td><label>Pin code</label></td>
+									<td>: <input type="number" name="sZipCode" required>
+									</td>
+								</tr>								
+<!-- 								<tr>
+									<td><label>DATE_OF_TRAVEL</label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr>
+								<tr>
+									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
+									<td>: <input type="number"
+										name="current_status_of_the_query" required></td>
+								</tr>
+								<tr>
+									<td><label>EXPECTED_CLOSURE_DATE</label></td>
+									<td>: <input type="date" name="expected_closure_date" required></td>
+								</tr>
+								<tr>
+									<td><label>REMARKS</label></td>
+									<td>: <input type="text" name="remarks" required></td>
+								</tr> -->
+								<tr>
+									<td colspan="2" align="center">
+										<button id="pkgBtn" type="button" class="btn btn-info"
+											style="background-color color: #FF4500;"
+											onclick="submitSalesEnq();">Create</button>
+										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											style="background-color color: #FF4500;display:none;"
+											onclick="submitPackage();">Delete</button>	
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+				</div>
+				<div id="enq" style="display:none;">
+					<div class="col-md-10 text-left">
+						<form style="margin-top: 20px;">
+							<label>Enter package name:</label> <input type="text"
+								name="deletepackage" required style="margin-right: 20px;">
+							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
+							<hr id="dhr">
+							<p id="showAllBooking"></p>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-10 text-left" id="delete" style="display:none;">
+					<form style="margin-top: 20px;">
+						<label>Enter package name:</label> <input type="text"
+							name="deletepackage" required style="margin-right: 20px;">
+						<button type="submit" class="btn btn-info">Delete</button>
+
+
+						<hr id="dhr">
+
+
+					</form>
+
+
+
+				</div>
+			</div>		
+		</div>
+		<div id="pmt" class="text-center" style="display:none;">
+			<div class="row content">
+				<div class="col-md-2 sidenav">
+					<p>
+						<button type="button" onclick="openSubMenu('pmt','add','enq');" class="btn btn-link">New Payment</button>
+					</p>
+					<p>
+						<button id="enqBtn" type="button" onclick="pmtDetails()" class="btn btn-link">View	Payment</button>
+					</p>
+					<p>
+						<button type="button" onclick="cc()" class="btn btn-link">Delete Payment</button>
+					</p>
+				</div>
+
+				<div class="col-md-10 text-left" id="add" style="display:none;">
+					<div class="table-responsive">
+						<form name="pmtinq" method="post">
+							<input type="hidden" name="sId" value="test"></input>
+							<table class="New_package">
+								<tr>
+									<th id="h" align="right">New Payment</th>
+									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<button type="button" class="ID1">
+											<span class="glyphicon glyphicon-refresh"></span> CLEAR
+										</button>
+										<button type="button" class="ID1" class="close" onclick="closeBox2($('#pmt #add'), pmtDetails);">
+											<span class="glyphicon glyphicon-remove" id="ap"></span>
+											CLOSE
+										</button>
+									</th>
+								</tr>
+								<tr>
+									<td><label>DATE_OF_QUERY</label></td>
+									<td>: <input type="date" name="date_of_query" required></td>
+								</tr>
+<!-- 								<tr>
+									<td><label>Gst Number</label></td>
+									<td>: <select name="Gst_Number" style="width: 180px;">
+											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
+											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
+										style="width: 40px; text-align: center;">&nbsp;%
+									</td>
+								</tr>
+								<tr>
+									<td><label>date of Travel </label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr> -->
+								<tr>
+									<td><label>CLIENT_NAME</label></td>
+									<td>: <input type="text" name="client_name"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>CONTACT_NUMBER</label></td>
+									<td>: <input type="number" name="contact_number" required></td>
+								</tr>
+								<tr>
+									<td><label>EMAIL_ID</label></td>
+									<td>: <input type="text" name="email_id" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>DESTINATION</label></td>
+									<td>: <input type="text" name="destination"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>DATE_OF_TRAVEL</label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr>
+								<tr>
+									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
+									<td>: <input type="number"
+										name="current_status_of_the_query" required></td>
+								</tr>
+								<tr>
+									<td><label>EXPECTED_CLOSURE_DATE</label></td>
+									<td>: <input type="date" name="expected_closure_date" required></td>
+								</tr>
+								<tr>
+									<td><label>REMARKS</label></td>
+									<td>: <input type="text" name="remarks" required></td>
+								</tr>
+								<tr>
+									<td colspan="2" align="center">
+										<button id="pkgBtn" type="button" class="btn btn-info"
+											style="background-color color: #FF4500;"
+											onclick="submitSalesEnq();">Create</button>
+										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											style="background-color color: #FF4500;display:none;"
+											onclick="submitPackage();">Delete</button>	
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+				</div>
+				<div id="enq" style="display:none;">
+					<div class="col-md-10 text-left">
+						<form style="margin-top: 20px;">
+							<label>Enter package name:</label> <input type="text"
+								name="deletepackage" required style="margin-right: 20px;">
+							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
+							<hr id="dhr">
+							<p id="showAllPayments"></p>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-10 text-left" id="delete" style="display:none;">
+					<form style="margin-top: 20px;">
+						<label>Enter package name:</label> <input type="text"
+							name="deletepackage" required style="margin-right: 20px;">
+						<button type="submit" class="btn btn-info">Delete</button>
+						<hr id="dhr">
+					</form>
+				</div>
+			</div>		
+		</div>							
 		<div id="stf" class="container-fluid text-center" style="display:none;">
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button type="button" onclick="addStaff('Add Staff')" class="btn btn-link">New
+						<button type="button" onclick="openSubMenu('stf','add','enq');" class="btn btn-link">New
 							Staff</button>
 					</p>
 					<p>
-						<button id="enq" type="button" onclick="showViewStaff()"
+						<button id="enqBtn" type="button" onclick="showViewStaff()"
 							class="btn btn-link">View Staff</button>
 					</p>
 					<p>
@@ -255,8 +666,9 @@
 
 				</div>
 				<div class="col-md-10 text-left" id="add" style="display:none;">
-					<div class="table-responsive" name="packagesTbl">
+					<div class="table-responsive">
 						<form name="staff" method="post">
+						<input type="hidden" name="sPswd"></input>
 							<table class="New_package">
 								<tr>
 									<th id="h" align="right">New Package</th>
@@ -264,7 +676,7 @@
 										<button type="button" class="ID1">
 											<span class="glyphicon glyphicon-refresh"></span> CLEAR
 										</button>
-										<button type="button" class="ID1" class="close" onclick="closeBox('pkgEntry');">
+										<button type="button" class="ID1" class="close" onclick="closeBox2($('#stf #add'), showViewStaff);">
 											<span class="glyphicon glyphicon-remove" id="ap"></span>
 											CLOSE
 										</button>
@@ -272,119 +684,95 @@
 								</tr>
 								<tr>
 									<td><label>Staff Id</label></td>
-									<td>: <input type="number" name="staff_id" required></td>
+									<td>: <input type="text" name="sId" required></td>
 								</tr>
-								<!-- <tr>
-									<td><label>Gst Number</label></td>
-									<td>: <select name="Gst_Number" style="width: 180px;">
-											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
-											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
-											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
-											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
-									</select> &nbsp &nbsp <input type="number" name="Per" value="4"
-										style="width: 40px; text-align: center;">&nbsp%
-									</td>
-								</tr> -->
 								<tr>
+									<td><label>Role Name</label></td>
+									<td>: <select id="roleName" name="roleName" class="l1">
+									</select>
+								</tr>								<tr>
 									<td><label>Password</label></td>
-									<td>: <input type="number" name="Password"
-										required></td>
+									<td>: <input type="password" id="pswd" required></td>
 								</tr>
+								<tr>
+									<td><label>Conform Password</label></td>
+									<td id="cnfrmPswdtd">: <input type="password" id="cnfrmPswd" required></td>
+								</tr>
+													 								
 								<tr>
 									<td><label>Birthday </label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
+									<td>: <input type="date" name="sBirthDate" required></td>
 								</tr>
 								<tr>
 									<td><label>First Name</label></td>
-									<td>: <input type="number" name="No_Of_Passengers"
+									<td>: <input type="text" name="sFirstName"
 										required></td>
 								</tr>
 								<tr>
 									<td><label>Last Name</label></td>
-									<td>: <input type="number" name="No_Of_Adult" required></td>
+									<td>: <input type="text" name="sLastName" required></td>
 								</tr>
 								<tr>
 									<td><label>Phone No</label></td>
-									<td>: <input type="number" name="No_Of_Child" required>
+									<td>: <input type="number" name="sMobile" required>
 									</td>
 								</tr>
 								<tr>
 									<td><label>Branch </label></td>
-									<td>: <select id="branch" class="l1"
-										name="Branch" required>
-											<option type="text"></option>
-
-											<option value="Andhra Pradesh">Andhra Pradesh</option>
-											<option value="Arunachal Pradesh">Arunachal Pradesh</option>
-											<option value="Assam">Assam</option>
-											<option value="Bihar">Bihar</option>
-											<option value="Chhattisgarh">Chhattisgarh</option>
-											<option value="Goa">Goa</option>
-											<option value="Gujarat">Gujarat</option>
-											<option value="Haryana">Haryana</option>
-											<option value="Himachal">Himachal Pradesh</option>
-											<option value="Jammu & Kashmir">Jammu & Kashmir</option>
-											<option value="Jharkhand">Jharkhand</option>
-											<option value="Karnataka">Karnataka</option>
-											<option value="Kerala">Kerala</option>
-											<option value="Madhya Pradesh">Madhya Pradesh</option>
-											<option value="Maharashtra">Maharashtra</option>
-											<option value="Manipur">Manipur</option>
-											<option value="Meghalaya">Meghalaya</option>
-											<option value="Mizoram">Mizoram</option>
-											<option value="Nagaland">Nagaland</option>
-											<option value="Odisha">Odisha</option>
-											<option value="Punjab">Punjab</option>
-											<option value="Rajasthan">Rajasthan</option>
-											<option value="Sikkim">Sikkim</option>
-											<option value="Tamil Nadu">Tamil Nadu</option>
-											<option value="Telangana">Telangana</option>
-											<option value="Uttarakhand">Uttarakhand</option>
-											<option value="Uttar Pradesh">Uttar Pradesh</option>
-											<option value="West Bengal">West Bengal</option>
-
+									<td>: <select id="sBranch" class="l1"
+										name="sBranch" required>
 									</select></td>
 								</tr>
 								<tr>
-									<td><label>Address</label></td><td></td>
+									<td colspan="2">
+										<hr>
+										<label><h3>Address</h3></label>
+									<hr>
+									</td>
 								</tr>
 								<tr>
 									<td><label>Door no/House no </label></td>
-									<td>: <input type="number"
-										name="Tour_Cost_Per_Adult_With_Triple_Share_Base" required></td>
+									<td>: <input type="text"
+										name="sHno" required></td>
 								</tr>
 								<tr>
 									<td><label>Street name</label></td>
-									<td>: <input type="number" name="Child_With_Bed" required></td>
+									<td>: <input type="text" name="sStreet" required></td>
 								</tr>
 								<tr>
 									<td><label>City</label></td>
-									<td>: <input type="number" name="Child_Without_Bed"
-										required>
+									<td>: <select id="sCity" class="l1"
+										name="sCity" required>
+									</select>
 									</td>
 								</tr>
 								<tr>
 									<td><label>State</label></td>
-									<td>: <input type="number" name="Infant_Cost" required>
+									<td>: <select id="sState" class="l1"
+										name="sState" required>
+									</select>
 									</td>
 								</tr>
 								<tr>
 									<td><label>Pin code</label></td>
-									<td>: <input type="number" name="No_Of_Days" required>
+									<td>: <input type="number" name="sZipCode" required>
 									</td>
 								</tr>
 								<tr>
 									<td colspan="2" align="center">
-										<button type="button" class="btn btn-info"
+										<button id="addBtn" type="button" class="btn btn-info"
 											style="background-color color: #FF4500;"
-											onclick="submitPackage();">Create</button>
+											onclick="submitStaff();">Create</button>
+										<button id="delBtn" type="button" class="btn btn-info"
+											style="background-color color: #FF4500;display:none;"
+											onclick="deleteStaff();">Delete</button>	
 									</td>
 								</tr>
 							</table>
 						</form>
 					</div>
 				</div>
-				<div class="col-md-10 text-left" id="view" style="display:none;">
+				<div class="col-md-10 text-left" id="enq" style="display:none;">
 					<div id="viewStaff" style="margin-top:30px;">
 						<label>Enter Staff name:</label> <input type="text"
 								name="findStaff" required style="margin-right: 20px;">
@@ -395,11 +783,11 @@
 				</div>
 			</div>
 		</div>
-		<div id="sal" class="container-fluid text-center" style="display:none;">
+<!-- 		<div id="sal" class="container-fluid text-center" style="display:none;">
 			<div class="row content">
 				<div class="col-md-1 sidenav">
 					<p>
-						<button type="button" id="enq" onclick="loadEnqSales();" class="btn btn-link">Enquiry</button>
+						<button type="button" id="enqBtn" onclick="loadEnqSales();" class="btn btn-link">Enquiry</button>
 					</p>
 				</div>
 				<div class="col-md-11 text-left" id="aa">
@@ -421,13 +809,10 @@
 						<hr>
 					</div>
 				</div>
-
-				<!-- <div class="col-sm-11 text-left" id="bb">hello world!...</div> -->
-
 			</div>
-		</div>
+		</div> -->
 		<div id="inv" style="display:none;">
-			<table style="width: 100%";>
+			<table style="width: 100%;">
 				<tr>
 					<th style="text-align: end"><img class="hello"
 						src="img-1.jpg" alt="hiii"></th>
@@ -437,7 +822,7 @@
 			</table>
 			<div class="matter">
 
-				<table style="width: 100%";>
+				<table style="width: 100%;">
 					<tr>
 						<th><br></br> No: 14373925, GST NO: AP-37BGXPS3317QIZ9</th>
 					</tr>
@@ -466,7 +851,7 @@
 			</div>
 			<div class="main">
 				<div class="bro">
-					<center>
+<!-- 					<center> -->
 						<table style="width: 95%">
 							<tr>
 								<td>Invoice No: DTT 257</td>
@@ -479,7 +864,7 @@
 								</td>
 							</tr>
 						</table>
-					</center>
+<!-- 					</center> -->
 				</div>
 				<div class="ccc">
 
@@ -492,6 +877,7 @@
 							<td>DEPUTY MANAGER,</td>
 							<td></td>
 						</tr>
+						<tr>
 						<td>STATE BANK OF INDIA,</td>
 						<td></td>
 						</tr>
@@ -514,9 +900,9 @@
 					<table style="width: 100%">
 						<tr>
 							<th>PARTICULARS
-							</td>
+							</th>
 							<th>AMOUNT
-							</td>
+							</th>
 
 						</tr>
 						<tr>
@@ -539,7 +925,7 @@
 							</td>
 
 						</tr>
-
+						<tr>
 						</tr>
 						<tr>
 							<td>TOTAL AIR FARES OF 2 PAX<br></br>
