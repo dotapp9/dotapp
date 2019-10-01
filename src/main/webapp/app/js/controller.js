@@ -133,7 +133,44 @@
 		
 	});
 }
-function addStaff(hdrLbl){
+function loadStateMaster(id){
+	if($(id+' #sBranch').prop('options').length == 0){
+		ApiService.getQuery([], 'select stateName, stateDesc from statemaster', '/api/1/statemaster', function(responseData, status){
+			for(var idx=0; idx<responseData.length; idx++){
+				var item = responseData[idx];
+				$(id+' #sBranch').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+				$(id+' #sState').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+			}
+		},function(responseData, status){
+			
+		});
+	}	
+}
+function loadRoleMaster(id){
+	if($(id+' #roleName').prop('options').length == 0){
+		ApiService.getQuery([], 'select roleName, roleDesc from rolemaster', '/api/1/rolemaster', function(responseData, status){
+			for(var idx=0; idx<responseData.length; idx++){
+				var item = responseData[idx];
+				$(id+' #roleName').append('<option value="'+item.roleName+'">'+item.roleDesc+'</option>');
+			}
+		},function(responseData, status){
+			
+		});
+		}	
+}
+function loadCityMaster(id){
+	if($(id+' #sCity').prop('options').length == 0){
+		ApiService.getQuery([], 'select cityName, cityDesc from citymaster', '/api/1/citymaster', function(responseData, status){
+			for(var idx=0; idx<responseData.length; idx++){
+				var item = responseData[idx];
+				$(id+' #sCity').append('<option value="'+item.cityName+'">'+item.cityDesc+'</option>')
+			}
+		},function(responseData, status){
+			
+		});	
+	}	
+}
+/*function addStaff(hdrLbl){
 	$('#stf #view').hide();
 	$('#stf #add #h').text(hdrLbl);
 	if($('#roleName').prop('options').length == 0){
@@ -169,7 +206,7 @@ function addStaff(hdrLbl){
 	}
 	$('#stf #add').show();
 	
-}
+}*/
 function loadEnqSales(){
 	var salesData = myBooks;
 	createTableFromJSON('showAllSales', salesData, function(row, tableData){
