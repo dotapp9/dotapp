@@ -116,9 +116,10 @@
 			  else
 				  $(id+' #add '+elemId).removeAttr('checked');
 		  }else if(ipType === undefined){
-			  var length = $('#add select[name='+key+'] > option').length;
+			  var length = $(id+' #add select[name='+key+'] > option').length;
 			  if(length > 0){
-				  $(id+ '#add select[name='+key+'] > option[value='+tableData[key]+']').attr('selected', 'selected');
+				  var selectCntrl = $(id+' #add select[name='+key+'] > option[value='+tableData[key]+']');
+				  selectCntrl.attr('selected', 'selected');
 			  }else{
 				  $(id+' #add #tmp'+key).val(tableData[key]);
 				  var selectBranch = $(id+' #add #tmp'+key).val();
