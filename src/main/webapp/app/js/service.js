@@ -30,6 +30,7 @@ var ApiService = {
 		}
 		var query = "INSERT INTO "+tableId+"("+keyElems+") VALUES ("+tokenElems+")";
 		request.query = query;
+		console.log(JSON.stringify(request));
 	$.ajax({
 		type: 'POST',
 		url: ApiService.backEndUrl+url,
@@ -48,44 +49,101 @@ var ApiService = {
 		}
 	});
 	},
-	put : function(requestData, tableId, url, successCallback, errorCallback){
+	put : function(updateData, whereData, tableId, url, successCallback, errorCallback){
 		$('#cover-spin').show(0);
 		var request = {};
 		var keyElems = "";
 		var tokenElems = "";
+		var query = "UPDATE "+tableId+" SET ";
 		var count=0;
-		for(var idx=0; idx<requestData.length; idx++){
-			var packageItem = requestData[idx];
-			if(packageItem['localName'] === 'input'){
-				if(count>0){
-					keyElems +=","+packageItem['name'];
-					tokenElems += ",$"+packageItem['name'];
-				}else{
-					keyElems +=packageItem['name'];
-					tokenElems += "$"+packageItem['name'];
+		for(var idx=0; idx<updateData.length; idx++){
+			var packageItem = updateData[idx];
+			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
+				if(packageItem['name'].trim() !== "" && whereData.indexOf(packageItem['name'].trim()) === -1){
+					if(count>0){
+						query += ","+packageItem['name']+'='+"$"+packageItem['name'];
+					}else{
+						query += packageItem['name']+'='+"$"+packageItem['name'];
+					}
+					count++;
+					request[packageItem['name']] = packageItem['value'];
 				}
-				count++;
-				request[packageItem['name']] = packageItem['value'];
 			}
 		}
-		var query = "INSERT INTO "+tableId+"("+keyElems+") VALUES ("+tokenElems+")";
-		request.query = query;
-	$.ajax({
-		type: 'PUT',
-		url: ApiService.backEndUrl+url,
-		contentType:'application/json',
-		data: JSON.stringify(request),
-		dataType: 'json',
-		success: function(responseData, textStatus, jqXHR) {
-			ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
-			successCallback(responseData, textStatus);
-			$('#cover-spin').hide();
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			errorCallback('PUT failed.', textStatus);
-			$('#cover-spin').hide();
+		count=0;
+		query += " WHERE ";
+		for(var idx=0; idx<whereData.length; idx++){
+			var col = whereData[idx];
+			var colData = updateData[col].value;
+			if(colData.trim() !== ''){
+				if(count>0){
+					query += " AND "+col+'='+"$"+col;
+				}else{
+					query += col+'='+"$"+col;
+				}
+				count++;
+				request[col] = colData;
+			}
 		}
-	});
+		request.query = query;
+		console.log(request);
+		$.ajax({
+			type: 'PUT',
+			url: ApiService.backEndUrl+url,
+			headers : ApiService.headers,
+			contentType:'application/json',
+			data: JSON.stringify(request),
+			dataType: 'json',
+			success: function(responseData, textStatus, jqXHR) {
+				//ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
+				successCallback(responseData, textStatus);
+				$('#cover-spin').hide();
+			},
+			error: function (responseData, textStatus, errorThrown) {
+				errorCallback('PUT failed.', textStatus);
+				$('#cover-spin').hide();
+			}
+		});
+	},
+	remove : function(requestData, whereData, tableId, url, successCallback, errorCallback){
+		$('#cover-spin').show(0);
+		var request = {};
+		var keyElems = "";
+		var tokenElems = "";
+		var query = "DELETE FROM "+tableId;
+		var count=0;
+		query += " WHERE ";
+		for(var idx=0; idx<whereData.length; idx++){
+			var col = whereData[idx];
+			var colData = requestData[col].value;
+			if(colData.trim() !== ''){
+				if(count>0){
+					query += " AND "+col+'='+"$"+col;
+				}else{
+					query += col+'='+"$"+col;
+				}
+				count++;
+				request[col] = colData;
+			}
+		}
+		request.query = query;
+		console.log(request);
+		$.ajax({
+			type: 'PUT',
+			url: ApiService.backEndUrl+url,
+			headers : ApiService.headers,
+			contentType:'application/json',
+			data: JSON.stringify(request),
+			dataType: 'json',
+			success: function(responseData, textStatus, jqXHR) {
+				successCallback(responseData, textStatus);
+				$('#cover-spin').hide();
+			},
+			error: function (responseData, textStatus, errorThrown) {
+				errorCallback('PUT failed.', textStatus);
+				$('#cover-spin').hide();
+			}
+		});		
 	},
 	getQuery : function(requestData, query, url, successCallback, errorCallback){
 		$('#cover-spin').show(0);

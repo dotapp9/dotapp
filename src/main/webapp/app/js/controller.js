@@ -1,5 +1,8 @@
-  
   var mainMenuItems = [];
+  window.onpopstate = function() {
+		location.href;
+     alert("clicked back button "+location.hash);
+  }; history.pushState({}, ''); 
   $('#cnfrmPswd').onComplete= function() {
 	  alert('Hi');
   };
@@ -7,7 +10,7 @@
 	  if($('#pswd').val() !== $('#cnfrmPswd').val()){
 		  alert('Passwords should be matched');
 	  }
-  })
+  });
   function addActive(elem){
 	  elem.addClass( "active" );
   }
@@ -62,49 +65,26 @@
 	  buildMenu(mainMenuItems);
   }
   function openSubMenu(parentid, show, hide){
-	  $('#'+parentid+' #'+show).show();
-	  $('#'+parentid+' #'+hide).hide();
-  }
-  function addPkg(){
-	$('#pkgEntry #h').text("Add Package");
-	addPkgEntry();
-  }
-  function addPkgEntry(){
-	$('#enqPackages').hide();
-	$('#pkgEntry').show();
+	  $(parentid+' #'+show).show();
+	  $(parentid+' #'+hide).hide();
   }
   function enquiryPkg(){
 	  $('#pkg #add').hide();
+	  $('#pkg #enq').show();
 	  ApiService.getQuery(document.loginPanel, 'select Tour_Id,Tour_Name, Gst_Number,Per,date_of_Travel,No_Of_Passengers,No_Of_Adult,No_Of_Child,Tour_Cost_Per_Adult,Tour_Cost_Per_Adult_With_Twin_Share_Base,Tour_Cost_Per_Adult_With_Triple_Share_Base,Child_With_Bed,Child_Without_Bed,infant_Cost,No_Of_days,countries_visiting,Description,Per_Child,Per_Adult,Per_Infant from tour_package', '/api/1/tour_package', function(responseData, status){
 	  var pkgs = responseData;
 	  var visibleCols = ['Tour_Name', 'date_of_Travel', 'No_Of_Passengers', 'No_Of_days'];
 	  createTableFromJSON('showAllPackages', pkgs, function(row, tableData){
-		$('#pkg #add #h').text("Package Details");
-			addPkgFillEntry(tableData[row.rowIndex-1]);
-			$('#pkg #newBtn').click();
-			//addPkgEntry();
+		  $('#pkg #newBtn').click();
+		  $('#pkg #add #Tour_Name').attr('readOnly','readOnly');
+			addFillEntry('#pkg', tableData[row.rowIndex-1], "Package Details");
+			$('#pkg #enq').hide();
 		}, visibleCols);
-	  $('#pkg #enq').show();
 	  }, function(){
 
 	  });
   }
-  function addPkgFillEntry(tableData){
-	  for(var key in tableData){
-		  var elemId = 'input[name='+key+']';
-		  $('#pkg #add '+elemId).val(tableData[key]);
-		  $('#pkg #add #pkgBtn').text('Modify');
-		  $('#pkg #add #pkgDelBtn').show();
-	  }
-  }
-  function addStfFillEntry(tableData){
-	  for(var key in tableData){
-		  var elemId = 'input[name='+key+']';
-		  $('#stf #add '+elemId).val(tableData[key]);
-		  $('#stf #add #addBtn').text('Modify');
-		  $('#stf #add #delBtn').show();
-	  }
-  }
+
   function addFillEntry(id, tableData, lblHdr){
 	  $(id+' #add #h').text(lblHdr);
 	  for(var key in tableData){
@@ -112,24 +92,36 @@
 		  if($(id+' #add '+elemId).length > 0){
 			  $(id+' #add '+elemId).val(tableData[key]);
 		  }else if($(id+' #add select[name='+key+']').length > 0){
-			  $(id+' #add select[name='+key+'] option[value='+tableData[key]+']').attr('selected', 'selected');
+			  var cntrl = $(id+' #add select[name='+key+'] option[value='+tableData[key]+']');
+			  cntrl.attr('selected', 'selected');
 		  }
-		  $(id+' #add #addBtn').text('Modify');
-		  $(id+' #add #delBtn').show();
+		  $(id+' #add #pswd').val('******');
+		  $(id+' #add #cnfrmPswd').val('******');
 	  }
+	  $(id+' #add #addBtn').text('Modify');
+	  $(id+' #add #delBtn').show();
   }
   function closeBox2(cntrl, callback){
 	  cntrl.hide();
 	  callback();
   }
   function showViewStaff(){
+	  
 	$('#stf #add').hide();
 	$('#stf #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sBirthDate, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sBirthDate, isDisabled, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllStaff', staffData, function(row, tableData){
+		var frmData = tableData[row.rowIndex-1];
+		if(frmData.isDisabled !== '0'){
+			$('#stf #add #isDisable input[type=checkbox]').attr('checked', 'checked');
+		}
+		/*if(frmData.sId.toLowerCase() === 'Admin'.toLowerCase())
+			$('#stf #add #delBtn').css('display', 'none'); */
 		$('#stf #newBtn').click();
-		addFillEntry('#stf', tableData[row.rowIndex-1], "Staff Details");
+		$('#stf #add #sId').attr('readOnly','readOnly');
+		$('#stf #add #isDisable').show(0);
+		addFillEntry('#stf', frmData, "Staff Details");
 		$('#stf #enq').hide();
 	});
 	}, function(responseData, status){
@@ -194,35 +186,67 @@ function loadEnqSales(){
 	});
 }
 function logoutLogin(){
-	//$('#main').hide();
-	//$('#loginPanel').show();
 	location.reload();
 }
-window.onpopstate = function() {
-		location.href;
-       alert("clicked back button "+location.hash);
-    }; history.pushState({}, '');
-  function submitPackage(){
-	  ApiService.post(document.packages, 'tour_package', '/api/1/tour_package', function(){
-		alert("Package Created Successfully.");
-		enquiryPkg();
-	  }, function(){
-		
-	  });
-  }
-  function submitStaff(){
-	  ApiService.post(document.staff, 'staff', '/api/1/staff', function(responseData, status){
-		  if(responseData.length > 0 ){
-			 if(responseData[0]['record_count'] > 0){
-				 alert("Staff Created Successfully.");
-				 showViewStaff();
-				 return;
-			 }
-		  }
-		  alert("Staff failed.");
+
+  function submitPackage(event){
+	  var btntxt = event.innerText;
+	  if(btntxt === 'Create'){
+		  ApiService.post(document.packages, 'tour_package', '/api/1/tour_package', function(){
+			alert("Package Created Successfully.");
+			enquiryPkg();
 		  }, function(){
 			
 		  });
+	  }else{
+		  ApiService.put(document.packages, ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Package Updated Successfully.");
+					 enquiryPkg();
+					 return;
+				 }
+			  }
+			  alert("Staff failed.");
+			  }, function(){
+				
+			  });		  
+	  }
+  }
+  function submitStaff(){
+	  var oprDesc = $('#stf #add #h').text();
+	  if('Create Staff' === oprDesc){
+		  document.staff.sPswd.value = document.staff.pswd.value;
+		  ApiService.post(document.staff, 'staff', '/api/1/staff', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Staff Created Successfully.");
+					 showViewStaff();
+					 return;
+				 }
+			  }
+			  alert("Staff failed.");
+			  }, function(){
+				
+			  });
+	  }else if('Staff Details' === oprDesc){
+		  var passwd = document.staff.pswd.value;
+		  if('******' !== passwd){
+			  document.staff.sPswd.value = document.staff.pswd.value;
+		  }
+		  ApiService.put(document.staff, ['sId'], 'staff', '/api/1/staff', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Staff Created Successfully.");
+					 showViewStaff();
+					 return;
+				 }
+			  }
+			  alert("Staff failed.");
+			  }, function(){
+				
+			  });		  
+	  }
   }
 function enquiryDetails(){
 	$('#sal #add').hide();
@@ -291,4 +315,53 @@ function pmtDetails(){
 	}, function(responseData, status){
 		
 	});	
+}
+function acctDetails(){
+	$('#acct #add').hide();
+	$('#acct #enq').show();
+	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales', '/api/1/sales', function(responseData, status){
+	var staffData = responseData;
+	createTableFromJSON('showAllAccounts', staffData, function(row, tableData){
+		addFillEntry('#acct', tableData[row.rowIndex-1], "Account Details");
+		$('#acct #add').show();
+		$('#acct #enq').hide();
+	});
+	}, function(responseData, status){
+		
+	});	
+}
+function clearForm(id){
+	$(id).trigger('reset');
+}
+function loadNewEntryForm(moduleId, frmName, lblHdr, id, contrls){
+	$(moduleId+' #isDisable').hide();
+	$(moduleId+' #add #h').text(lblHdr);
+	$(moduleId+' #add '+id).removeAttr('readOnly');
+	clearForm(moduleId+' form[name='+frmName+']');
+	openSubMenu(moduleId,'add','enq');
+	if(contrls !== undefined && contrls !== null){
+		for(var idx=0; idx<contrls.length; idx++){
+			var contrl = contrls[idx];
+			contrl(moduleId);
+		}
+	}
+}
+function deleteStaff(){
+	if(document.staff.sId.value.toLowerCase() === 'Admin'.toLowerCase()){
+		alert('Admin User Cannot be removed');
+		showViewStaff();
+		return;
+	}
+  ApiService.remove(document.staff, ['sId'], 'staff', '/api/1/staff', function(responseData, status){
+	  if(responseData.length > 0 ){
+		 if(responseData[0]['record_count'] > 0){
+			 alert("Staff deletion Successfully.");
+			 showViewStaff();
+			 return;
+		 }
+	  }
+	  alert("Staff deletion failed.");
+	  }, function(){
+		  alert("Staff deletion failed.");
+	  });	
 }

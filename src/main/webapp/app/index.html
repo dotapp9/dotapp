@@ -57,7 +57,7 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button id="newBtn" type="button" onclick="openSubMenu('pkg','add','enq');" class="btn btn-link">Add
+						<button id="newBtn" type="button" onclick="loadNewEntryForm('#pkg', 'packages', 'Create Package', '#Tour_Name');" class="btn btn-link">Add
 							Package</button>
 					</p>
 					<p>
@@ -77,7 +77,7 @@
 								<tr>
 									<th id="h" align="right">New Package</th>
 									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<button type="button" class="ID1">
+										<button type="button" class="ID1" onclick="clearForm('#pkg form[name=packages]');">
 											<span class="glyphicon glyphicon-refresh"></span> CLEAR
 										</button>
 										<button type="button" class="ID1" class="close" onclick="closeBox2($('#pks #add'), enquiryPkg);">
@@ -88,7 +88,7 @@
 								</tr>
 								<tr>
 									<td><label>Tour Id</label></td>
-									<td>: <input type="number" name="Tour_Name" required></td>
+									<td>: <input type="number" name="Tour_Name" id="Tour_Name" required></td>
 								</tr>
 								<tr>
 									<td><label>Gst Number</label></td>
@@ -148,17 +148,17 @@
 								</tr>
 								<tr>
 									<td><label>Infant Cost</label></td>
-									<td>: <input type="number" name="Infant_Cost" required>
+									<td>: <input type="number" name="infant_Cost" required>
 									</td>
 								</tr>
 								<tr>
 									<td><label>No Of Days</label></td>
-									<td>: <input type="number" name="No_Of_Days" required>
+									<td>: <input type="number" name="No_Of_days" required>
 									</td>
 								</tr>
 								<tr>
 									<td><label>Countries Visiting</label></td>
-									<td>: <input type="text" name="Countries_Visiting"
+									<td>: <input type="text" name="countries_visiting"
 										required>
 									</td>
 								</tr>
@@ -191,10 +191,10 @@
 								</tr>
 								<tr>
 									<td colspan="2" align="center">
-										<button id="pkgBtn" type="button" class="btn btn-info"
+										<button id="addBtn" type="button" class="btn btn-info"
 											style="background-color color: #FF4500;"
-											onclick="submitPackage();">Create</button>
-										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											onclick="submitPackage(this);">Create</button>
+										<button id="delBtn" type="button" class="btn btn-info" 
 											style="background-color color: #FF4500;display:none;"
 											onclick="submitPackage();">Delete</button>	
 									</td>
@@ -646,11 +646,132 @@
 				</div>
 			</div>		
 		</div>							
+		<div id="acct" class="text-center" style="display:none;">
+			<div class="row content">
+				<div class="col-md-2 sidenav">
+					<p>
+						<button type="button" onclick="openSubMenu('acct','add','enq');" class="btn btn-link">New Account</button>
+					</p>
+					<p>
+						<button id="enqBtn" type="button" onclick="acctDetails()" class="btn btn-link">View	Accounts</button>
+					</p>
+					<p>
+						<button type="button" onclick="cc()" class="btn btn-link">Delete Account</button>
+					</p>
+				</div>
+
+				<div class="col-md-10 text-left" id="add" style="display:none;">
+					<div class="table-responsive">
+						<form name="pmtinq" method="post">
+							<input type="hidden" name="sId" value="test"></input>
+							<table class="New_package">
+								<tr>
+									<th id="h" align="right">New Payment</th>
+									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<button type="button" class="ID1">
+											<span class="glyphicon glyphicon-refresh"></span> CLEAR
+										</button>
+										<button type="button" class="ID1" class="close" onclick="closeBox2($('#pmt #add'), pmtDetails);">
+											<span class="glyphicon glyphicon-remove" id="ap"></span>
+											CLOSE
+										</button>
+									</th>
+								</tr>
+								<tr>
+									<td><label>DATE_OF_QUERY</label></td>
+									<td>: <input type="date" name="date_of_query" required></td>
+								</tr>
+<!-- 								<tr>
+									<td><label>Gst Number</label></td>
+									<td>: <select name="Gst_Number" style="width: 180px;">
+											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
+											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
+											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
+											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
+									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
+										style="width: 40px; text-align: center;">&nbsp;%
+									</td>
+								</tr>
+								<tr>
+									<td><label>date of Travel </label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr> -->
+								<tr>
+									<td><label>CLIENT_NAME</label></td>
+									<td>: <input type="text" name="client_name"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>CONTACT_NUMBER</label></td>
+									<td>: <input type="number" name="contact_number" required></td>
+								</tr>
+								<tr>
+									<td><label>EMAIL_ID</label></td>
+									<td>: <input type="text" name="email_id" required>
+									</td>
+								</tr>
+								<tr>
+									<td><label>DESTINATION</label></td>
+									<td>: <input type="text" name="destination"
+										required></td>
+								</tr>
+								<tr>
+									<td><label>DATE_OF_TRAVEL</label></td>
+									<td>: <input type="date" name="date_of_Travel" required></td>
+								</tr>
+								<tr>
+									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
+									<td>: <input type="number"
+										name="current_status_of_the_query" required></td>
+								</tr>
+								<tr>
+									<td><label>EXPECTED_CLOSURE_DATE</label></td>
+									<td>: <input type="date" name="expected_closure_date" required></td>
+								</tr>
+								<tr>
+									<td><label>REMARKS</label></td>
+									<td>: <input type="text" name="remarks" required></td>
+								</tr>
+								<tr>
+									<td colspan="2" align="center">
+										<button id="pkgBtn" type="button" class="btn btn-info"
+											style="background-color color: #FF4500;"
+											onclick="submitSalesEnq();">Create</button>
+										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											style="background-color color: #FF4500;display:none;"
+											onclick="submitPackage();">Delete</button>	
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+				</div>
+				<div id="enq" style="display:none;">
+					<div class="col-md-10 text-left">
+						<form style="margin-top: 20px;">
+							<label>Enter package name:</label> <input type="text"
+								name="deletepackage" required style="margin-right: 20px;">
+							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
+							<hr id="dhr">
+							<p id="showAllAccounts"></p>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-10 text-left" id="delete" style="display:none;">
+					<form style="margin-top: 20px;">
+						<label>Enter package name:</label> <input type="text"
+							name="deletepackage" required style="margin-right: 20px;">
+						<button type="submit" class="btn btn-info">Delete</button>
+						<hr id="dhr">
+					</form>
+				</div>
+			</div>		
+		</div>							
 		<div id="stf" class="container-fluid text-center" style="display:none;">
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button id="newBtn" type="button" onclick="openSubMenu('stf','add','enq');loadRoleMaster('#stf');loadStateMaster('#stf');loadCityMaster('#stf');" class="btn btn-link">New
+						<button id="newBtn" type="button" onclick="loadNewEntryForm('#stf', 'staff', 'Create Staff', '#sId', [loadRoleMaster, loadStateMaster, loadCityMaster])" class="btn btn-link">New
 							Staff</button>
 					</p>
 					<p>
@@ -658,12 +779,8 @@
 							class="btn btn-link">View Staff</button>
 					</p>
 					<p>
-						<button type="button" onclick="cc()" class="btn btn-link">Delete/Update
-							Staff</button>
+						<button type="button" onclick="remove()" class="btn btn-link">Delete Staff</button>
 					</p>
-
-
-
 				</div>
 				<div class="col-md-10 text-left" id="add" style="display:none;">
 					<div class="table-responsive">
@@ -673,7 +790,7 @@
 								<tr>
 									<th id="h" align="right">New Package</th>
 									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<button type="button" class="ID1">
+										<button type="button" class="ID1" onclick="clearForm('#stf form[name=staff]');">
 											<span class="glyphicon glyphicon-refresh"></span> CLEAR
 										</button>
 										<button type="button" class="ID1" class="close" onclick="closeBox2($('#stf #add'), showViewStaff);">
@@ -684,7 +801,7 @@
 								</tr>
 								<tr>
 									<td><label>Staff Id</label></td>
-									<td>: <input type="text" name="sId" required></td>
+									<td>: <input type="text" id="sId" name="sId" required readOnly></td>
 								</tr>
 								<tr>
 									<td><label>Role Name</label></td>
@@ -723,11 +840,15 @@
 										name="sBranch" required>
 									</select></td>
 								</tr>
+								<tr id="isDisable">
+									<td><label>Is Disabled </label></td>
+									<td>: <input type="checkbox" name="isDisabled" required></input></td>
+								</tr>
 								<tr>
 									<td colspan="2">
 										<hr>
-										<label><h3>Address</h3></label>
-									<hr>
+											<label><h3>Address</h3></label>
+										<hr>
 									</td>
 								</tr>
 								<tr>
@@ -793,7 +914,6 @@
 				</tr>
 			</table>
 			<div class="matter">
-
 				<table style="width: 100%;">
 					<tr>
 						<th><br></br> No: 14373925, GST NO: AP-37BGXPS3317QIZ9</th>
@@ -809,13 +929,10 @@
 						<th>CIN: U63090TG2018PTC126379; email:
 							dottholidaysvga@gmail.com.</th>
 					</tr>
-
-
 				</table>
 				<hr id="dhr">
 			</div>
 			<div id="hari">
-
 				<h3 style="width: 190px; height: 50px;">INVOICE</h3>
 			</div>
 			<div id="sh">
@@ -823,7 +940,6 @@
 			</div>
 			<div class="main">
 				<div class="bro">
-<!-- 					<center> -->
 						<table style="width: 95%">
 							<tr>
 								<td>Invoice No: DTT 257</td>
@@ -836,10 +952,8 @@
 								</td>
 							</tr>
 						</table>
-<!-- 					</center> -->
 				</div>
 				<div class="ccc">
-
 					<table style="width: 100%">
 						<tr>
 							<td>TO:Mr.G.KUTESWARA RAO Garu & Family (2 pax)</td>
@@ -865,7 +979,6 @@
 							<td>VIJAYAWADA.</td>
 							<td></td>
 						</tr>
-
 					</table>
 				</div>
 				<div class="ddd">
@@ -875,27 +988,21 @@
 							</th>
 							<th>AMOUNT
 							</th>
-
 						</tr>
 						<tr>
 							<td><br></br>TRANSPORTATION CHARGES FOR 2 PAX IN EUROPE</td>
 							<td style="text-align: center"><br></br>87,450.00</td>
-
 						</tr>
-
 						<tr>
 							<td>VOUCHER DATED: 23-07-2019<br></br>
 							</td>
 							<td></td>
-
 						</tr>
-
 						<tr>
 							<td>GST 5%<br></br>
 							</td>
 							<td style="text-align: center">4,372.00<br></br>
 							</td>
-
 						</tr>
 						<tr>
 						</tr>
@@ -906,19 +1013,15 @@
 							<td style="text-align: center">1,68,178.00 <br></br>
 							<br></br>
 							</td>
-
 						</tr>
-
 						<tr>
 							<td>Grand Total in Words:</td>
 							<td style="text-align: center">2,60,000.00</td>
-
 						</tr>
 						<tr>
 							<td>Two lakhs sixty thousand rupees only.</td>
 							<td></td>
 						</tr>
-
 					</table>
 				</div>
 				<div class="last">
@@ -938,11 +1041,10 @@
 					<P>RECEIVED</P>
 					<P>VIJAYAWADA</P>
 				</div>
-
 			</div>
 		</div>
 	</div>
-</body>
+		</body>
 <script src="js/controller.js"></script>
 </html>
 
