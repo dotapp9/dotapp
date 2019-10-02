@@ -56,15 +56,15 @@
 		<div id="pkg" class="text-center" style="display:none;">
 			<div class="row content">
 				<div class="col-md-2 sidenav">
-					<p>
+					<p id="newBtnTab">
 						<button id="newBtn" type="button" onclick="loadNewEntryForm('#pkg', 'packages', 'Create Package', '#Tour_Name');" class="btn btn-link">Add
 							Package</button>
 					</p>
-					<p>
+					<p id="inqBtnTab">
 						<button id="enqBtn" type="button" onclick="enquiryPkg()" class="btn btn-link">Enquiry
 							Packages</button>
 					</p>
-					<p>
+					<p id="delBtnTab">
 						<button type="button" onclick="cc()" class="btn btn-link">Delete
 							Package</button>
 					</p>
@@ -770,15 +770,15 @@
 		<div id="stf" class="container-fluid text-center" style="display:none;">
 			<div class="row content">
 				<div class="col-md-2 sidenav">
-					<p>
+					<p id="newBtnTab">
 						<button id="newBtn" type="button" onclick="loadNewEntryForm('#stf', 'staff', 'Create Staff', '#sId', [loadBranchMaster, loadRoleMaster, loadStateMaster, loadCityMaster])" class="btn btn-link">New
 							Staff</button>
 					</p>
-					<p>
+					<p id="inqBtnTab">
 						<button id="enqBtn" type="button" onclick="showViewStaff()"
 							class="btn btn-link">View Staff</button>
 					</p>
-					<p>
+					<p id="delBtnTab">
 						<button type="button" onclick="remove()" class="btn btn-link">Delete Staff</button>
 					</p>
 				</div>

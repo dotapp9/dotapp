@@ -25,13 +25,28 @@
 			$('#'+menuItem.id).show();
 			addActive($('#'+id.parentElement.id));
 			$('#'+menuItem.id+" #enqBtn").click();
+			addLeftMenu(menuItem);
 			continue;
 		}
 		$('#'+menuItem.id).hide();
 		removeActive($('#'+menuItem.id+'Tab'));
 	  }
   }
-  
+  function addLeftMenu(menuItem){
+	  if(menuItem.subMenu !== undefined){
+		  $('#'+menuItem.id+' #newBtnTab').hide();
+		  $('#'+menuItem.id+' #inqBtnTab').hide();
+		  $('#'+menuItem.id+' #delBtnTab').hide();
+		  for(var idx=0; idx<menuItem.subMenu.length; idx++){
+			  var tem = menuItem.subMenu[idx];
+			  $('#'+menuItem.id+' #'+tem).show();
+		  }
+	  }else{
+		  $('#'+menuItem.id+' #newBtnTab').show();
+		  $('#'+menuItem.id+' #inqBtnTab').show();
+		  $('#'+menuItem.id+' #delBtnTab').show();
+	  }
+  }
   function doLogin(elem){
 	  ApiService.getQuery(document.loginPanel, 'select sId, roleName, sFirstName, sLastName, isDisabled from staff where sId=$Login and sPswd=$Password and roleName=$Selection', '/api/1/auth', function(responseData, status){
 		if(responseData.length>0){
@@ -63,7 +78,7 @@
 		  mainMenuItems = adminMenuItems;
 		  
 	  }else if(id==='sales'){
-		  var salesMenuItems = [{'id': 'sal', desc:'Inquiry'}, {'id': 'booking', desc:'Booking'}, {'id': 'pmt', desc:'Paments'}, {'id': 'pkg', desc:'Package'}, {'id': 'inv', desc:'Invoice'}];
+		  var salesMenuItems = [{'id': 'sal', desc:'Inquiry'}, {'id': 'booking', desc:'Booking'}, {'id': 'pmt', desc:'Paments'}, {'id': 'pkg', desc:'Package', 'subMenu' : ['inqBtnTab']}, {'id': 'inv', desc:'Invoice'}];
 		  mainMenuItems = salesMenuItems;
 	  }
 	  buildMenu(mainMenuItems);
@@ -109,9 +124,6 @@
 				  var selectBranch = $(id+' #add #tmp'+key).val();
 				  console.log(selectBranch);
 			  }
-/*		  }else if($(id+' #add select[name='+key+']').length > 0){
-			  var cntrl = $(id+' #add select[name='+key+'] option[value='+tableData[key]+']');
-			  cntrl.attr('selected', 'selected');*/
 		  }else{
 			  $(id+' #add '+elemId).val(tableData[key]);
 		  }
