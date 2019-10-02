@@ -63,6 +63,7 @@
 			}else{
 			}
 			$('#loginPanel').hide();
+			$('#userName').attr('userId', responseData[0].sId);
 			$('#userName').text(responseData[0].sFirstName+' '+responseData[0].sLastName);
 			$('#main').show();
 		}else{
@@ -119,11 +120,12 @@
 			  var length = $(id+' #add select[name='+key+'] > option').length;
 			  if(length > 0){
 				  var selectCntrl = $(id+' #add select[name='+key+'] > option[value='+tableData[key]+']');
-				  selectCntrl.attr('selected', 'selected');
+				  if(selectCntrl.length > 0){
+					  selectCntrl.attr('selected', 'selected');
+					  console.log(key + ' selected');
+				  }
 			  }else{
 				  $(id+' #add #tmp'+key).val(tableData[key]);
-				  var selectBranch = $(id+' #add #tmp'+key).val();
-				  console.log(selectBranch);
 			  }
 		  }else{
 			  $(id+' #add '+elemId).val(tableData[key]);
@@ -134,12 +136,8 @@
 	  $(id+' #add #addBtn').text('Modify');
 	  $(id+' #add #delBtn').show();
   }
-  function closeBox2(cntrl, callback){
-	  cntrl.hide();
-	  callback();
-  }
+
   function showViewStaff(){
-	  
 	$('#stf #add').hide();
 	$('#stf #enq').show();
 	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sBirthDate, isDisabled, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
@@ -304,30 +302,80 @@ function logoutLogin(){
 function enquiryDetails(){
 	$('#sal #add').hide();
 	$('#sal #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales', '/api/1/sales', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllSalesInq', staffData, function(row, tableData){
-		addFillEntry('#sal', tableData[row.rowIndex-1], "SalesInquiry Details");
-		$('#sal #add').show();
+		var frmData = tableData[row.rowIndex-1];
+		$('#sal #newBtn').click();
+		addFillEntry('#sal', frmData, "SalesInquiry Details");
+		$('#sal #add #client_name').attr('readOnly','readOnly');
 		$('#sal #enq').hide();
 	});
 	}, function(responseData, status){
 		
 	});
 }
-function submitSalesEnq(){
-  ApiService.post(document.salesinq, 'sales', '/api/1/sales', function(responseData, status){
-	  if(responseData.length > 0 ){
-		 if(responseData[0]['record_count'] > 0){
-			 alert("Sales Enquiry Created Successfully.");
-			 enquiryDetails();
-			 return;
-		 }
-	  }
-	  alert("Sales Enquiry Creation failed.");
-	  }, function(){
-		  alert("Sales Enquiry Creation failed.");
-	  });	
+function submitSalesEnq(event){
+	var btntxt = event.innerText;
+	document.salesinq.sId.value = $('#userName').attr('userId');
+	  if(btntxt === 'Create'){
+		  ApiService.post(document.salesinq, 'sales', '/api/1/sales', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Sales Enquiry Created Successfully.");
+					 enquiryDetails();
+					 return;
+				 }
+			  }
+			  alert("Sales Enquiry Creation failed.");
+			  }, function(){
+				  alert("Sales Enquiry Creation failed.");
+			  });
+	  }else{
+		  ApiService.put(document.salesinq, ['client_name'], 'sales', '/api/1/sales', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Sales Enquiry Updated Successfully.");
+					 enquiryDetails();
+					 return;
+				 }
+			  }
+			  alert("Sales Enquiry Update failed.");
+			  }, function(){
+				  alert("Sales Enquiry Update failed.");
+			  });		  
+	  }	  
+}
+function submitBooking(event){
+	var btntxt = event.innerText;
+	document.bookinginq.sId.value = $('#userName').attr('userId');
+	  if(btntxt === 'Create'){
+		  ApiService.post(document.bookinginq, 'bookings', '/api/1/bookings', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Booking Created Successfully.");
+					 bookingDetails();
+					 return;
+				 }
+			  }
+			  alert("Booking Creation failed.");
+			  }, function(){
+				  alert("Booking Creation failed.");
+			  });
+	  }else{
+		  ApiService.put(document.bookinginq, ['client_name'], 'bookings', '/api/1/bookings', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Booking Updated Successfully.");
+					 bookingDetails();
+					 return;
+				 }
+			  }
+			  alert("Booking Update failed.");
+			  }, function(){
+				  alert("Booking Update failed.");
+			  });		  
+	  }	 	
 }
 function loadPackageIds(){
 	if($('#booking #Tour_Name').prop('options').length == 0){
@@ -344,11 +392,13 @@ function loadPackageIds(){
 function bookingDetails(){
 	$('#booking #add').hide();
 	$('#booking #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales', '/api/1/sales', function(responseData, status){
+	ApiService.getQuery(document.bookinginq, 'select Tour_Name, client_name, contact_number, email_id, destination, sHno, sStreet, sCity, sState, sZipCode from bookings', '/api/1/bookings', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllBooking', staffData, function(row, tableData){
-		addFillEntry('#booking', tableData[row.rowIndex-1], "Booking Details");
-		$('#booking #add').show();
+		var frmData = tableData[row.rowIndex-1];
+		$('#booking #newBtn').click();
+		addFillEntry('#booking', frmData, "Booking Details");
+		$('#booking #add #client_name').attr('readOnly','readOnly');
 		$('#booking #enq').hide();
 	});
 	}, function(responseData, status){
@@ -358,7 +408,7 @@ function bookingDetails(){
 function pmtDetails(){
 	$('#pmt #add').hide();
 	$('#pmt #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales', '/api/1/sales', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllPayments', staffData, function(row, tableData){
 		addFillEntry('#pmt', tableData[row.rowIndex-1], "Payment Details");
@@ -372,7 +422,7 @@ function pmtDetails(){
 function acctDetails(){
 	$('#acct #add').hide();
 	$('#acct #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select DATE_OF_QUERY, CLIENT_NAME, CONTACT_NUMBER, EMAIL_ID, DESTINATION, DATE_OF_TRAVEL, CURRENT_STATUS_OF_THE_QUERY, EXPECTED_CLOSURE_DATE, REMARKS from sales', '/api/1/sales', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('showAllAccounts', staffData, function(row, tableData){
 		addFillEntry('#acct', tableData[row.rowIndex-1], "Account Details");
@@ -383,22 +433,43 @@ function acctDetails(){
 		
 	});	
 }
+$.fn.clearForm = function() {
+	  return this.each(function() {
+	    var type = this.type, tag = this.tagName.toLowerCase();
+	    if (tag == 'form')
+	      return $(':input',this).clearForm();
+	    if (type == 'text' || type == 'password' || type == 'number' || type == 'date' || tag == 'textarea')
+	      this.value = '';
+	    else if (type == 'checkbox' || type == 'radio')
+	      this.checked = false;
+	    else if (tag == 'select')
+	      this.selectedIndex = -1;
+	  });
+	};
 function clearForm(id){
 	$(id).trigger('reset');
+	//$(id).clearForm();
+}
+function closeBox2(cntrl, callback){
+	  cntrl.hide();
+	  callback();
 }
 function loadNewEntryForm(moduleId, frmName, lblHdr, id, contrls){
+	clearForm(moduleId+' form[name='+frmName+']');
+	//clearForm(moduleId+' #'+frmName);
+	openSubMenu(moduleId,'add','enq');
 	$(moduleId+' #isDisable').hide();
 	$(moduleId+' #add #h').text(lblHdr);
+	$(moduleId+' #add #addBtn').text('Create');
+	$(moduleId+' #add #delBtn').hide();
 	$(moduleId+' #add '+id).removeAttr('readOnly');
-	clearForm(moduleId+' form[name='+frmName+']');
-	openSubMenu(moduleId,'add','enq');
 	if(contrls !== undefined && contrls !== null){
 		for(var idx=0; idx<contrls.length; idx++){
 			var contrl = contrls[idx];
 			contrl(moduleId);
 		}
 	}
-	$(id+' #add #addBtn').text('Create');
+	console.log('loadNewEntryForm Called');
 }
 
 function deleteStaff(){
@@ -433,4 +504,19 @@ function deletePackage(){
 	  }, function(){
 		  alert("Package deletion failed.");
 	  });	
+}
+function deleteSales(){
+	document.salesinq.sId.value = $('#userName').attr('userId');
+	  ApiService.remove(document.salesinq, ['client_name', 'sId'], 'sales', '/api/1/sales', function(responseData, status){
+		  if(responseData.length > 0 ){
+			 if(responseData[0]['record_count'] > 0){
+				 alert("Sales Inquiry deletion Successfully.");
+				 enquiryDetails();
+				 return;
+			 }
+		  }
+		  alert("Sales Inquiry deletion failed.");
+		  }, function(){
+			  alert("Sales Inquiry deletion failed.");
+		  });	
 }

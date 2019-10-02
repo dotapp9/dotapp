@@ -235,7 +235,7 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button type="button" onclick="openSubMenu('sal','add','enq');" class="btn btn-link">New Enquiry</button>
+						<button id="newBtn" type="button" onclick="loadNewEntryForm('#sal', 'salesinq', 'Create Sales Inquiry', '#client_name');" class="btn btn-link">New Enquiry</button>
 					</p>
 					<p>
 						<button id="enqBtn" type="button" onclick="enquiryDetails()" class="btn btn-link">View	Enquiry</button>
@@ -283,7 +283,7 @@
 								</tr> -->
 								<tr>
 									<td><label>CLIENT_NAME</label></td>
-									<td>: <input type="text" name="client_name"
+									<td>: <input type="text" name="client_name" id="client_name"
 										required></td>
 								</tr>
 								<tr>
@@ -302,7 +302,7 @@
 								</tr>
 								<tr>
 									<td><label>DATE_OF_TRAVEL</label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
+									<td>: <input type="date" name="date_of_travel" required></td>
 								</tr>
 								<tr>
 									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
@@ -319,12 +319,12 @@
 								</tr>
 								<tr>
 									<td colspan="2" align="center">
-										<button id="pkgBtn" type="button" class="btn btn-info"
+										<button id="addBtn" type="button" class="btn btn-info"
 											style="background-color color: #FF4500;"
-											onclick="submitSalesEnq();">Create</button>
-										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											onclick="submitSalesEnq(this);">Create</button>
+										<button id="delBtn" type="button" class="btn btn-info" 
 											style="background-color color: #FF4500;display:none;"
-											onclick="submitPackage();">Delete</button>	
+											onclick="deleteSales(this);">Delete</button>	
 									</td>
 								</tr>
 							</table>
@@ -356,7 +356,7 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button id="newBtn" type="button" onclick="openSubMenu('booking','add','enq');loadPackageIds();loadStateMaster('#booking');loadCityMaster('#booking');" class="btn btn-link">New Booking</button>
+						<button id="newBtn" type="button" onclick="loadNewEntryForm('#booking', 'bookinginq', 'Create Booking', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);" class="btn btn-link">New Booking</button>
 					</p>
 					<p>
 						<button id="enqBtn" type="button" onclick="bookingDetails()" class="btn btn-link">View	Booking</button>
@@ -485,12 +485,12 @@
 								</tr> -->
 								<tr>
 									<td colspan="2" align="center">
-										<button id="pkgBtn" type="button" class="btn btn-info"
+										<button id="addBtn" type="button" class="btn btn-info"
 											style="background-color color: #FF4500;"
-											onclick="submitSalesEnq();">Create</button>
-										<button id="pkgDelBtn" type="button" class="btn btn-info" 
+											onclick="submitBooking(this);">Create</button>
+										<button id="delBtn" type="button" class="btn btn-info" 
 											style="background-color color: #FF4500;display:none;"
-											onclick="submitPackage();">Delete</button>	
+											onclick="deleteBooking();">Delete</button>	
 									</td>
 								</tr>
 							</table>
