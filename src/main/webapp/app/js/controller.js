@@ -345,6 +345,7 @@ function loadNewEntryForm(moduleId, frmName, lblHdr, id, contrls){
 			contrl(moduleId);
 		}
 	}
+	$(id+' #add #addBtn').text('Create');
 }
 function deleteStaff(){
 	if(document.staff.sId.value.toLowerCase() === 'Admin'.toLowerCase()){
@@ -363,5 +364,19 @@ function deleteStaff(){
 	  alert("Staff deletion failed.");
 	  }, function(){
 		  alert("Staff deletion failed.");
+	  });	
+}
+function deletePackage(){
+  ApiService.remove(document.packages, ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
+	  if(responseData.length > 0 ){
+		 if(responseData[0]['record_count'] > 0){
+			 alert("Package deletion Successfully.");
+			 enquiryPkg();
+			 return;
+		 }
+	  }
+	  alert("Package deletion failed.");
+	  }, function(){
+		  alert("Package deletion failed.");
 	  });	
 }
