@@ -33,9 +33,12 @@
   }
   
   function doLogin(elem){
-	  ApiService.getQuery(document.loginPanel, 'select sId, roleName, sFirstName, sLastName from staff where sId=$Login and sPswd=$Password and roleName=$Selection', '/api/1/auth', function(responseData, status){
+	  ApiService.getQuery(document.loginPanel, 'select sId, roleName, sFirstName, sLastName, isDisabled from staff where sId=$Login and sPswd=$Password and roleName=$Selection', '/api/1/auth', function(responseData, status){
 		if(responseData.length>0){
-			$('#loginPanel').hide();
+			if('0' !== responseData[0].isDisabled){
+				alert("User has been Locked.");
+				return;
+			}
 			if('admin' === responseData[0].roleName.toLowerCase()){
 				addMenu('admin');
 				openMenu({parentElement:{id:'pkgTab'}});
@@ -44,6 +47,7 @@
 				openMenu({parentElement:{id:'salTab'}});
 			}else{
 			}
+			$('#loginPanel').hide();
 			$('#userName').text(responseData[0].sFirstName+' '+responseData[0].sLastName);
 			$('#main').show();
 		}else{
@@ -89,11 +93,27 @@
 	  $(id+' #add #h').text(lblHdr);
 	  for(var key in tableData){
 		  var elemId = 'input[name='+key+']';
-		  if($(id+' #add '+elemId).length > 0){
-			  $(id+' #add '+elemId).val(tableData[key]);
-		  }else if($(id+' #add select[name='+key+']').length > 0){
+		  var ipType = $(id+' #add '+elemId).attr('type');
+		  console.log('ipType :: '+ipType);
+		  if('checkbox' === ipType){
+			  if('1' === tableData.isDisabled)
+				  $(id+' #add '+elemId).attr('checked', 'checked');
+			  else
+				  $(id+' #add '+elemId).removeAttr('checked');
+		  }else if(ipType === undefined){
+			  var length = $('#add select[name='+key+'] > option').length;
+			  if(length > 0){
+				  $(id+ '#add select[name='+key+'] > option[value='+tableData[key]+']').attr('selected', 'selected');
+			  }else{
+				  $(id+' #add #tmp'+key).val(tableData[key]);
+				  var selectBranch = $(id+' #add #tmp'+key).val();
+				  console.log(selectBranch);
+			  }
+/*		  }else if($(id+' #add select[name='+key+']').length > 0){
 			  var cntrl = $(id+' #add select[name='+key+'] option[value='+tableData[key]+']');
-			  cntrl.attr('selected', 'selected');
+			  cntrl.attr('selected', 'selected');*/
+		  }else{
+			  $(id+' #add '+elemId).val(tableData[key]);
 		  }
 		  $(id+' #add #pswd').val('******');
 		  $(id+' #add #cnfrmPswd').val('******');
@@ -116,25 +136,29 @@
 		if(frmData.isDisabled !== '0'){
 			$('#stf #add #isDisable input[type=checkbox]').attr('checked', 'checked');
 		}
-		/*if(frmData.sId.toLowerCase() === 'Admin'.toLowerCase())
-			$('#stf #add #delBtn').css('display', 'none'); */
 		$('#stf #newBtn').click();
+		addFillEntry('#stf', frmData, "Staff Details");
 		$('#stf #add #sId').attr('readOnly','readOnly');
 		$('#stf #add #isDisable').show(0);
-		addFillEntry('#stf', frmData, "Staff Details");
+		
 		$('#stf #enq').hide();
 	});
 	}, function(responseData, status){
 		
 	});
 }
+
   function loadBranchMaster(id){
 		if($(id+' #sBranch').prop('options').length == 0){
 			ApiService.getQuery([], 'select stateName, stateDesc from statemaster', '/api/1/statemaster', function(responseData, status){
 				for(var idx=0; idx<responseData.length; idx++){
 					var item = responseData[idx];
-					$(id+' #sBranch').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
-					$(id+' #sState').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+					var selectValue = $(id+' #add #tmpsBranch').val();
+					if(item.stateName === selectValue){
+						$(id+' #sBranch').append('<option value="'+item.stateName+'" selected>'+item.stateDesc+'</option>');
+					}else{
+						$(id+' #sBranch').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+					}
 				}
 			},function(responseData, status){
 				
@@ -146,8 +170,12 @@ function loadStateMaster(id){
 		ApiService.getQuery([], 'select stateName, stateDesc from statemaster', '/api/1/statemaster', function(responseData, status){
 			for(var idx=0; idx<responseData.length; idx++){
 				var item = responseData[idx];
-				$(id+' #sBranch').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
-				$(id+' #sState').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+				var selectValue = $(id+' #add #tmpsState').val();
+				if(item.stateName === selectValue){
+					$(id+' #sState').append('<option value="'+item.stateName+'" selected>'+item.stateDesc+'</option>');
+				}else{
+					$(id+' #sState').append('<option value="'+item.stateName+'">'+item.stateDesc+'</option>');
+				}
 			}
 		},function(responseData, status){
 			
@@ -159,19 +187,29 @@ function loadRoleMaster(id){
 		ApiService.getQuery([], 'select roleName, roleDesc from rolemaster', '/api/1/rolemaster', function(responseData, status){
 			for(var idx=0; idx<responseData.length; idx++){
 				var item = responseData[idx];
-				$(id+' #roleName').append('<option value="'+item.roleName+'">'+item.roleDesc+'</option>');
+				var selectValue = $(id+' #add #tmproleName').val();
+				if(item.roleName === selectValue){
+					$(id+' #roleName').append('<option value="'+item.roleName+'" selected>'+item.roleDesc+'</option>');
+				}else{
+					$(id+' #roleName').append('<option value="'+item.roleName+'">'+item.roleDesc+'</option>');
+				}
 			}
 		},function(responseData, status){
 			
 		});
-		}	
+	}	
 }
 function loadCityMaster(id){
 	if($(id+' #sCity').prop('options').length == 0){
 		ApiService.getQuery([], 'select cityName, cityDesc from citymaster', '/api/1/citymaster', function(responseData, status){
 			for(var idx=0; idx<responseData.length; idx++){
 				var item = responseData[idx];
-				$(id+' #sCity').append('<option value="'+item.cityName+'">'+item.cityDesc+'</option>')
+				var selectValue = $(id+' #add #tmpsCity').val();
+				if(item.cityName === selectValue){
+					$(id+' #sCity').append('<option value="'+item.cityName+'" selected>'+item.cityDesc+'</option>');
+				}else{
+					$(id+' #sCity').append('<option value="'+item.cityName+'">'+item.cityDesc+'</option>');
+				}
 			}
 		},function(responseData, status){
 			
@@ -233,6 +271,8 @@ function logoutLogin(){
 		  var passwd = document.staff.pswd.value;
 		  if('******' !== passwd){
 			  document.staff.sPswd.value = document.staff.pswd.value;
+		  }else{
+			  document.staff.sPswd.value = undefined;
 		  }
 		  ApiService.put(document.staff, ['sId'], 'staff', '/api/1/staff', function(responseData, status){
 			  if(responseData.length > 0 ){
@@ -347,6 +387,7 @@ function loadNewEntryForm(moduleId, frmName, lblHdr, id, contrls){
 	}
 	$(id+' #add #addBtn').text('Create');
 }
+
 function deleteStaff(){
 	if(document.staff.sId.value.toLowerCase() === 'Admin'.toLowerCase()){
 		alert('Admin User Cannot be removed');

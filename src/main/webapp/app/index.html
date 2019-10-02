@@ -771,7 +771,7 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button id="newBtn" type="button" onclick="loadNewEntryForm('#stf', 'staff', 'Create Staff', '#sId', [loadRoleMaster, loadStateMaster, loadCityMaster])" class="btn btn-link">New
+						<button id="newBtn" type="button" onclick="loadNewEntryForm('#stf', 'staff', 'Create Staff', '#sId', [loadBranchMaster, loadRoleMaster, loadStateMaster, loadCityMaster])" class="btn btn-link">New
 							Staff</button>
 					</p>
 					<p>
@@ -786,6 +786,10 @@
 					<div class="table-responsive">
 						<form name="staff" method="post">
 						<input type="hidden" name="sPswd"></input>
+						<input type="hidden" id="tmproleName"></input>
+						<input type="hidden" id="tmpsState"></input>
+						<input type="hidden" id="tmpsCity"></input>
+						<input type="hidden" id="tmpsBranch"></input>
 							<table class="New_package">
 								<tr>
 									<th id="h" align="right">New Package</th>

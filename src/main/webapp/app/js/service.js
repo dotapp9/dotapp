@@ -16,15 +16,20 @@ var ApiService = {
 			var packageItem = requestData[idx];
 			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
 				if(packageItem['name'].trim() !== ""){
-				if(count>0){
-					keyElems +=","+packageItem['name'];
-					tokenElems += ",$"+packageItem['name'];
-				}else{
-					keyElems +=packageItem['name'];
-					tokenElems += "$"+packageItem['name'];
-				}
-				count++;
-				request[packageItem['name']] = packageItem['value'];
+					if(count>0){
+						keyElems +=","+packageItem['name'];
+						tokenElems += ",$"+packageItem['name'];
+					}else{
+						keyElems +=packageItem['name'];
+						tokenElems += "$"+packageItem['name'];
+					}
+					count++;
+					if(packageItem['type'].trim() === "checkbox"){
+						var userType = packageItem.checked === false ? 0 : 1;
+						request[packageItem['name']] = userType;
+					}else{
+						request[packageItem['name']] = packageItem['value'];
+					}
 				}
 			}
 		}
@@ -59,14 +64,20 @@ var ApiService = {
 		for(var idx=0; idx<updateData.length; idx++){
 			var packageItem = updateData[idx];
 			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
-				if(packageItem['name'].trim() !== "" && whereData.indexOf(packageItem['name'].trim()) === -1){
+				if(packageItem['name'].trim() !== "" && whereData.indexOf(packageItem['name'].trim()) === -1 && packageItem['value'] !== undefined && packageItem['value'] !== 'undefined'){
 					if(count>0){
 						query += ","+packageItem['name']+'='+"$"+packageItem['name'];
 					}else{
 						query += packageItem['name']+'='+"$"+packageItem['name'];
 					}
 					count++;
-					request[packageItem['name']] = packageItem['value'];
+					if(packageItem['type'].trim() === "checkbox"){
+						var userType = packageItem.checked === false ? 0 : 1;
+						request[packageItem['name']] = userType;
+					}else{
+						if(packageItem['value'] !== undefined && packageItem['value'] !== 'undefined')
+							request[packageItem['name']] = packageItem['value'];
+					}
 				}
 			}
 		}
