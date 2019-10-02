@@ -7,7 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -103,7 +106,13 @@ public class DotEndpoint {
 					ResultSetMetaData rsMd = rsTables.getMetaData();
 					HashMap<String, String> resultMap = new HashMap<String, String>();
 					for(int clx=0; clx<rsMd.getColumnCount(); clx++) {
-						resultMap.put(rsMd.getColumnName(clx+1), rsTables.getString(clx+1));
+						int type = rsMd.getColumnType(clx+1);
+						if(Types.TIMESTAMP == type) {
+							Date date = rsTables.getDate(clx+1);
+							resultMap.put(rsMd.getColumnName(clx+1), date.toString());
+						}else {
+							resultMap.put(rsMd.getColumnName(clx+1), rsTables.getString(clx+1));
+						}
 					}
 					resultList.add(resultMap);
 				}
