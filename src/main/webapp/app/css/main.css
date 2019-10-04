@@ -136,9 +136,11 @@ input[type=text], select,input[type=email],input[type=number]{
 }
 }*/
 .l1{
-font-size:13px;
+	height:30px;
+	width:180px;
+font-size:inherit;
 color:#908C8C;
-margin-left:10px;
+/*margin-left:10px;*/
 }
 .l2{
 font-size:13px;
@@ -539,4 +541,7 @@ height:90%;
 
 .hrefClass{
 	cursor: pointer;
+}
+.dateClass{
+	width: 180px;
 }
