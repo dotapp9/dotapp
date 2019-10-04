@@ -92,7 +92,7 @@
 								</tr>
 								<tr>
 									<td><label>Gst Number</label></td>
-									<td>: <select name="Gst_Number" style="width: 180px;">
+									<td>: <select name="Gst_Number" class="l1">
 											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
 											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
 											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
@@ -103,7 +103,7 @@
 								</tr>
 								<tr>
 									<td><label>Date of Travel </label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
+									<td>: <input type="date" name="date_of_Travel" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>No Of Passengers</label></td>
@@ -276,7 +276,7 @@
 								</tr>
 								<tr>
 									<td><label>DATE_OF_QUERY</label></td>
-									<td>: <input type="date" name="date_of_query" required></td>
+									<td>: <input type="date" name="date_of_query" required class="dateClass"></td>
 								</tr>
 <!-- 								<tr>
 									<td><label>Gst Number</label></td>
@@ -314,7 +314,7 @@
 								</tr>
 								<tr>
 									<td><label>DATE_OF_TRAVEL</label></td>
-									<td>: <input type="date" name="date_of_travel" required></td>
+									<td>: <input type="date" name="date_of_travel" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
@@ -323,7 +323,7 @@
 								</tr>
 								<tr>
 									<td><label>EXPECTED_CLOSURE_DATE</label></td>
-									<td>: <input type="date" name="expected_closure_date" required></td>
+									<td>: <input type="date" name="expected_closure_date" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>REMARKS</label></td>
@@ -409,7 +409,7 @@
 								</tr>
 								<tr>
 									<td><label>Select Package</label></td>
-									<td>: <select id="Tour_Name" name="Tour_Name" style="width: 180px;">
+									<td>: <select id="Tour_Name" name="Tour_Name" class="l1">
 											<!--<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
 											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
 											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
@@ -490,23 +490,49 @@
 									<td>: <input type="number" name="sZipCode" required>
 									</td>
 								</tr>								
-<!-- 								<tr>
-									<td><label>DATE_OF_TRAVEL</label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
+ 								<tr>
+									<td><label>Adult</label></td>
+									<td>: <select id="adult" class="l1">
+												<option value="1">1</option>
+												<option value="2">2</option>
+												<option value="3">3</option>
+												<option value="4">4</option>
+												<option value="5">5</option>
+												<option value="6">6</option>
+												<option value="7">7</option>
+												<option value="8">8</option>
+												<option value="9">9</option>
+												<option value="10">10</option>
+												<option value="11">11</option>
+												<option value="12">12</option>
+												<option value="13">13</option>
+												<option value="14">14</option>
+												<option value="15">15</option>
+												<option value="16">16</option>
+												<option value="17">17</option>
+										</select>
+									</td>
 								</tr>
 								<tr>
-									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
-									<td>: <input type="number"
-										name="current_status_of_the_query" required></td>
+									<td><label>Child</label></td>
+									<td>: <select id="child" class="l1">
+											<option value="0">0</option>
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											</select>
+									</td>
 								</tr>
 								<tr>
-									<td><label>EXPECTED_CLOSURE_DATE</label></td>
-									<td>: <input type="date" name="expected_closure_date" required></td>
+									<td><label>With Bed</label></td>
+									<td>: <input type="checkbox" name="withbed" required></input></td>
 								</tr>
 								<tr>
-									<td><label>REMARKS</label></td>
-									<td>: <input type="text" name="remarks" required></td>
-								</tr> -->
+									<td><label>Infant</label></td>
+									<td>: <input type="text" name="Infant" required></td>
+								</tr>
 								<tr>
 									<td colspan="2" align="center">
 										<button id="addBtn" type="button" class="btn btn-info"
@@ -594,7 +620,7 @@
 								</tr>
 								<tr>
 									<td><label>DATE_OF_QUERY</label></td>
-									<td>: <input type="date" name="date_of_query" required></td>
+									<td>: <input type="date" name="date_of_query" required class="dateClass"></td>
 								</tr>
 <!-- 								<tr>
 									<td><label>Gst Number</label></td>
@@ -632,7 +658,7 @@
 								</tr>
 								<tr>
 									<td><label>DATE_OF_TRAVEL</label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
+									<td>: <input type="date" name="date_of_Travel" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
@@ -641,7 +667,7 @@
 								</tr>
 								<tr>
 									<td><label>EXPECTED_CLOSURE_DATE</label></td>
-									<td>: <input type="date" name="expected_closure_date" required></td>
+									<td>: <input type="date" name="expected_closure_date" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>REMARKS</label></td>
@@ -727,7 +753,7 @@
 								</tr>
 								<tr>
 									<td><label>DATE_OF_QUERY</label></td>
-									<td>: <input type="date" name="date_of_query" required></td>
+									<td>: <input type="date" name="date_of_query" required class="dateClass"></td>
 								</tr>
 <!-- 								<tr>
 									<td><label>Gst Number</label></td>
@@ -765,7 +791,7 @@
 								</tr>
 								<tr>
 									<td><label>DATE_OF_TRAVEL</label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
+									<td>: <input type="date" name="date_of_Travel" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>CURRENT_STATUS_OF_THE_QUERY</label></td>
@@ -774,7 +800,7 @@
 								</tr>
 								<tr>
 									<td><label>EXPECTED_CLOSURE_DATE</label></td>
-									<td>: <input type="date" name="expected_closure_date" required></td>
+									<td>: <input type="date" name="expected_closure_date" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>REMARKS</label></td>
@@ -882,7 +908,7 @@
 													 								
 								<tr>
 									<td><label>Birthday </label></td>
-									<td>: <input type="date" name="sBirthDate" required></td>
+									<td>: <input type="date" name="sBirthDate" required class="dateClass"></td>
 								</tr>
 								<tr>
 									<td><label>First Name</label></td>
