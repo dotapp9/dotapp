@@ -94,10 +94,10 @@
 	  ApiService.getQuery(document.loginPanel, 'select Tour_Id,Tour_Name, Gst_Number,Per,date_of_Travel,No_Of_Passengers,No_Of_Adult,No_Of_Child,Tour_Cost_Per_Adult,Tour_Cost_Per_Adult_With_Twin_Share_Base,Tour_Cost_Per_Adult_With_Triple_Share_Base,Child_With_Bed,Child_Without_Bed,infant_Cost,No_Of_days,countries_visiting,Description,Per_Child,Per_Adult,Per_Infant from tour_package', '/api/1/tour_package', function(responseData, status){
 	  var pkgs = responseData;
 	  var visibleCols = ['Tour_Name', 'date_of_Travel', 'No_Of_Passengers', 'No_Of_days'];
-	  createTableFromJSON('showAllPackages', pkgs, function(row, tableData){
+	  createTableFromJSON('#pkg #enq', pkgs, function(row, tableData){
 		  $('#pkg #newBtn').click();
 		  $('#pkg #add #Tour_Name').attr('readOnly','readOnly');
-			addFillEntry('#pkg', tableData[row.rowIndex-1], "Package Details");
+			addFillEntry('#pkg', tableData[row], "Package Details");
 			$('#pkg #enq').hide();
 		}, visibleCols);
 	  }, function(){
@@ -142,8 +142,8 @@
 	$('#stf #enq').show();
 	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sBirthDate, isDisabled, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
 	var staffData = responseData;
-	createTableFromJSON('showAllStaff', staffData, function(row, tableData){
-		var frmData = tableData[row.rowIndex-1];
+	createTableFromJSON('#stf #enq', staffData, function(row, tableData){
+		var frmData = tableData[row];
 		if(frmData.isDisabled !== '0'){
 			$('#stf #add #isDisable input[type=checkbox]').attr('checked', 'checked');
 		}
@@ -304,8 +304,8 @@ function enquiryDetails(){
 	$('#sal #enq').show();
 	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
-	createTableFromJSON('showAllSalesInq', staffData, function(row, tableData){
-		var frmData = tableData[row.rowIndex-1];
+	createTableFromJSON('#sal #enq', staffData, function(row, tableData){
+		var frmData = tableData[row];
 		$('#sal #newBtn').click();
 		addFillEntry('#sal', frmData, "SalesInquiry Details");
 		$('#sal #add #client_name').attr('readOnly','readOnly');
@@ -394,8 +394,8 @@ function bookingDetails(){
 	$('#booking #enq').show();
 	ApiService.getQuery(document.bookinginq, 'select Tour_Name, client_name, contact_number, email_id, destination, sHno, sStreet, sCity, sState, sZipCode from bookings', '/api/1/bookings', function(responseData, status){
 	var staffData = responseData;
-	createTableFromJSON('showAllBooking', staffData, function(row, tableData){
-		var frmData = tableData[row.rowIndex-1];
+	createTableFromJSON('#booking #enq', staffData, function(row, tableData){
+		var frmData = tableData[row];
 		$('#booking #newBtn').click();
 		addFillEntry('#booking', frmData, "Booking Details");
 		$('#booking #add #client_name').attr('readOnly','readOnly');
@@ -410,8 +410,8 @@ function pmtDetails(){
 	$('#pmt #enq').show();
 	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
-	createTableFromJSON('showAllPayments', staffData, function(row, tableData){
-		addFillEntry('#pmt', tableData[row.rowIndex-1], "Payment Details");
+	createTableFromJSON('#pmt #enq', staffData, function(row, tableData){
+		addFillEntry('#pmt', tableData[row], "Payment Details");
 		$('#pmt #add').show();
 		$('#pmt #enq').hide();
 	});
@@ -424,8 +424,8 @@ function acctDetails(){
 	$('#acct #enq').show();
 	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
 	var staffData = responseData;
-	createTableFromJSON('showAllAccounts', staffData, function(row, tableData){
-		addFillEntry('#acct', tableData[row.rowIndex-1], "Account Details");
+	createTableFromJSON('#acct #enq', staffData, function(row, tableData){
+		addFillEntry('#acct', tableData[row], "Account Details");
 		$('#acct #add').show();
 		$('#acct #enq').hide();
 	});

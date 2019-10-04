@@ -4,7 +4,6 @@ var ApiService = {
 		console.log(jqXHR.getResponseHeader('siteid'));
 		ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
 		},
-	//backEndUrl : 'http://dotapp-dotapp.apps.ca-central-1.starter.openshift-online.com',
 	backEndUrl : '',
 	post : function(requestData, tableId, url, successCallback, errorCallback){
 		$('#cover-spin').show(0);
@@ -189,7 +188,7 @@ var ApiService = {
 	});
 	}
 }
-function createTableFromJSON(tableId, myBooks, rowCallback, visibleCols) {
+function createTableFromJSON1(tableId, myBooks, rowCallback, visibleCols) {
         // EXTRACT VALUE FOR HTML HEADER. 
         // ('Book ID', 'Book Name', 'Category' and 'Price')
         var col = [];
@@ -219,7 +218,7 @@ function createTableFromJSON(tableId, myBooks, rowCallback, visibleCols) {
         // ADD JSON DATA TO THE TABLE AS ROWS.
         for (var i = 0; i < myBooks.length; i++) {
             tr = table.insertRow(-1);
-			tr.onclick = function(event){rowCallback(this, myBooks)};
+			tr.onclick = function(event){rowCallback(this.rowIndex-1, myBooks)};
             for (var j = 0; j < col.length; j++) {
                 var tabCell = tr.insertCell(-1);
 				tabCell.setAttribute("id", "a"+(j+1));
@@ -231,30 +230,86 @@ function createTableFromJSON(tableId, myBooks, rowCallback, visibleCols) {
         var divContainer = document.getElementById(tableId);
         divContainer.innerHTML = "";
         divContainer.appendChild(table);
+        addPagination(myBooks, 3);
     }
+
 function buildMenu(menuItems){
 	for(var idx=0; idx<menuItems.length; idx++){
 		  var item = menuItems[idx];
 		  $('#topMenu').append('<li id="'+item.id+'Tab"><a class="hrefClass" onclick="openMenu(this);">'+item.desc+'</a></li>');
 	}
 }
-var myBooks = [
-            {
-                "Tour Id": "1",
-                "Date of Travel": "Computer Architecture",
-                "No Of Passengers": "Computers",
-                "No Of Days": "125.60"
-            },
-            {
-                "Tour Id": "2",
-                "Date of Travel": "Asp.Net 4 Blue Book",
-                "No Of Passengers": "Programming",
-                "No Of Days": "56.00"
-            },
-            {
-                "Tour Id": "3",
-                "Date of Travel": "Popular Science",
-                "No Of Passengers": "Science",
-                "No Of Days": "210.40"
-            }
-        ];
+$.makeTable = function (mydata, rowCallback, visibleCols) {
+	var rowClick = function(event){rowCallback(this, mydata)}
+    var table = $('<table border=1 id="myTable" class="pagingTableData">');
+    var tblHeader = "<tr>";
+    var idx=0;
+    for (var k in mydata[0]){ 
+    	if((visibleCols === undefined || visibleCols === null) || visibleCols.indexOf(k) > -1){
+    		tblHeader += "<th id='"+(idx+1)+"'>" + k + "</th>";
+    	}
+    }
+    tblHeader += "</tr>";
+    $(tblHeader).appendTo(table);
+    $.each(mydata, function (index, value) {
+        var TableRow = "<tr>";
+        var j=0;
+        $.each(value, function (key, val) {
+        	if((visibleCols === undefined || visibleCols === null) || visibleCols.indexOf(key) > -1){
+        		TableRow += "<td id='a"+(j+1)+"'>" + val + "</td>";
+        		j++;
+        	}
+        });
+        TableRow += "</tr>";
+        $tr = $(TableRow);
+        $tr.click(rowCallback);
+        $(table).append($tr);
+    });
+    return ($(table));
+};
+function createTableFromJSONTemp(tableId, myBooks, rowCallback, visibleCols){
+	var mydata = eval(myBooks);
+	createTable(tableId, 0, mydata, function(event){
+		rowCallback(this.rowIndex-1, myBooks);
+	}, visibleCols);
+}
+function createTableFromJSON(tableId, myBooks, rowCallback, visibleCols){
+	var table = $('<table id="gblTable"><tr><td><p id="showAll"></p></td></tr><tr><td><div id="addPagination"></div></td></tr></table>');
+	$(tableId+' #showTbl').empty();
+	$(tableId+' #showTbl').append($(table));
+	var mydata = eval(myBooks);
+	createTable(tableId, 0, mydata, function(event){
+		rowCallback(this.rowIndex-1, myBooks);
+	}, visibleCols);
+}
+function createTable(tableId, startIdx, mydata, rowCallback, visibleCols){
+	var pageSize = 3;
+	var tblData = mydata.slice(startIdx, (startIdx+pageSize));
+	var table = $.makeTable(tblData, rowCallback, visibleCols);
+	$(tableId+' #showAll').empty();
+	$(tableId+' #showAll').append($(table));
+	addPagination(tableId+' #addPagination', mydata, pageSize, function(event){
+		var idx = parseInt(event.target.dataset.direction);
+		createTable(tableId, (idx-1)+pageSize, mydata, rowCallback, visibleCols);
+	});
+}
+function addPagination(id, myBooks, recsPerPage, callback){
+	if(myBooks.length <= recsPerPage)
+		return;
+	var count = 0;
+	var html = $('<ul class="pagination"></ul>');
+	var beginRow = $('<li class="hrefClass"><a data-direction="1">&lt;&lt;</a></li>');
+	beginRow.click(callback);
+	html.append(beginRow);
+	for (var i = 0; i < myBooks.length; i+=recsPerPage) {
+		var row = $('<li class="hrefClass"><a data-direction="'+(count+1)+'">'+(count+1)+'</a></li>');
+		row.click(callback);
+		html.append(row);
+		count++;
+	}
+	var endRow = $('<li class="hrefClass"><a data-direction="'+(count)+'">&gt;&gt;</a></li>');
+	endRow.click(callback);
+	html.append(endRow);
+	$(id).empty();
+	$(id).append(html);
+}

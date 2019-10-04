@@ -282,6 +282,14 @@ background-color:gray;
  
 padding-left:8px;
 }
+#gblTable{
+	text-align:center;
+	font-size:10pt;
+	width:100%;
+	color:black;
+	cellspacing:0px;
+	cellpadding:0px;	
+}
 #myTable
 {
 	
