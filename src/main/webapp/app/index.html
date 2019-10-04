@@ -28,10 +28,10 @@
 						<option value="Admin" selected class="optn">Admin Login</option>
 					</select> 
 					<input type="text" id="login" class="fadeIn second loginText"
-						name="Login" placeholder="login" value="admin"></input> 
+						name="Login" placeholder="login" value="" required></input> 
 					<input type="password"
 						id="password" class="fadeIn third loginPassword" name="Password"
-						placeholder="password" value="admin"></input> 
+						placeholder="password" value="" required></input> 
 					<input type="button"
 						class="fadeIn fourth loginBtn" onclick="doLogin(this);"
 						value="Login"></input>
@@ -211,18 +211,6 @@
 							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
 							<hr id="dhr">
 							<p id="showTbl"></p>
-							<!--<table id="gblTable">
-								<tr>
-									<td>
-										<p id="showAll"></p>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div id="addPagination"></div>
-									</td>
-								</tr>
-							</table>-->
 						</form>
 					</div>
 				</div>
@@ -278,21 +266,6 @@
 									<td><label>DATE_OF_QUERY</label></td>
 									<td>: <input type="date" name="date_of_query" required class="dateClass"></td>
 								</tr>
-<!-- 								<tr>
-									<td><label>Gst Number</label></td>
-									<td>: <select name="Gst_Number" style="width: 180px;">
-											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
-											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
-											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
-											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
-									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
-										style="width: 40px; text-align: center;">&nbsp;%
-									</td>
-								</tr>
-								<tr>
-									<td><label>date of Travel </label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
-								</tr> -->
 								<tr>
 									<td><label>CLIENT_NAME</label></td>
 									<td>: <input type="text" name="client_name" id="client_name"
@@ -350,18 +323,6 @@
 								name="deletepackage" required style="margin-right: 20px;">
 							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
 							<hr id="dhr">
-							<!--<table id="gblTable">
-								<tr>
-									<td>
-										<p id="showAll"></p>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div id="addPagination"></div>
-									</td>
-								</tr>
-							</table>-->
 							<p id="showTbl"></p>
 						</form>
 					</div>
@@ -380,7 +341,7 @@
 			<div class="row content">
 				<div class="col-md-2 sidenav">
 					<p>
-						<button id="newBtn" type="button" onclick="loadNewEntryForm('#booking', 'bookinginq', 'Create Booking', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);" class="btn btn-link">New Booking</button>
+						<button id="newBtn" type="button" onclick="openBasicBooking()" class="btn btn-link">New Booking</button>
 					</p>
 					<p>
 						<button id="enqBtn" type="button" onclick="bookingDetails()" class="btn btn-link">View	Booking</button>
@@ -394,156 +355,200 @@
 					<div class="table-responsive">
 						<form name="bookinginq" method="post">
 							<input type="hidden" name="sId" value="test"></input>
-							<table class="New_package">
-								<tr>
-									<th id="h" align="right">New Booking</th>
-									<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<button type="button" class="ID1">
-											<span class="glyphicon glyphicon-refresh"></span> CLEAR
-										</button>
-										<button type="button" class="ID1" class="close" onclick="closeBox2($('#booking #add'), bookingDetails);">
-											<span class="glyphicon glyphicon-remove" id="ap"></span>
-											CLOSE
-										</button>
-									</th>
-								</tr>
-								<tr>
-									<td><label>Select Package</label></td>
-									<td>: <select id="Tour_Name" name="Tour_Name" class="l1">
-											<!--<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
-											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
-											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
-											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>-->
-									</select>
-									</td>
-								</tr>
-<!-- 								<tr>
-									<td><label>CLIENT_NAME</label></td>
-									<td>: <input type="date" name="client_name" required></td>
-								</tr> -->
-<!-- 								<tr>
-									<td><label>Gst Number</label></td>
-									<td>: <select name="Gst_Number" style="width: 180px;">
-											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
-											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
-											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
-											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
-									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
-										style="width: 40px; text-align: center;">&nbsp;%
-									</td>
-								</tr>
-								<tr>
-									<td><label>date of Travel </label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
-								</tr> -->
-								<tr>
-									<td><label>Client Name</label></td>
-									<td>: <input type="text" name="client_name"
-										required></td>
-								</tr>
-								<tr>
-									<td><label>Contact Number</label></td>
-									<td>: <input type="number" name="contact_number" required></td>
-								</tr>
-								<tr>
-									<td><label>Email ID</label></td>
-									<td>: <input type="text" name="email_id" required>
-									</td>
-								</tr>
-								<tr>
-									<td><label>Destination</label></td>
-									<td>: <input type="text" name="destination"
-										required></td>
-								</tr>
-								<tr>
-									<td colspan="2">
+							<div id="BasicInfo" style="display:none;">
+								<table class="New_package">
+									<tr>
+										<th id="h" align="right">New Booking</th>
+										<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<button type="button" class="ID1">
+												<span class="glyphicon glyphicon-refresh"></span> CLEAR
+											</button>
+											<button type="button" class="ID1" class="close" onclick="closeBox2($('#booking #add'), bookingDetails);">
+												<span class="glyphicon glyphicon-remove" id="ap"></span>
+												CLOSE
+											</button>
+										</th>
+									</tr>
+									<tr>
+										<td><label>Select Package</label></td>
+										<td>: <select id="Tour_Name" name="Tour_Name" class="l1">
+										</select>
+										</td>
+									</tr>
+									<tr>
+										<td><label>Client Name</label></td>
+										<td>: <input type="text" name="client_name"
+											required></td>
+									</tr>
+									<tr>
+										<td><label>Contact Number</label></td>
+										<td>: <input type="number" name="contact_number" required></td>
+									</tr>
+									<tr>
+										<td><label>Email ID</label></td>
+										<td>: <input type="text" name="email_id" required>
+										</td>
+									</tr>
+									<tr>
+										<td><label>Destination</label></td>
+										<td>: <input type="text" name="destination"
+											required></td>
+									</tr>
+									<tr>
+										<td colspan="2">
+											<hr>
+											<label><h3>Address</h3></label>
 										<hr>
-										<label><h3>Address</h3></label>
-									<hr>
-									</td>
-								</tr>
-								<tr>
-									<td><label>Door no/House no </label></td>
-									<td>: <input type="text"
-										name="sHno" required></td>
-								</tr>
-								<tr>
-									<td><label>Street name</label></td>
-									<td>: <input type="text" name="sStreet" required></td>
-								</tr>
-								<tr>
-									<td><label>City</label></td>
-									<td>: <select id="sCity" class="l1"
-										name="sCity" required>
-									</select>
-									</td>
-								</tr>
-								<tr>
-									<td><label>State</label></td>
-									<td>: <select id="sState" class="l1"
-										name="sState" required>
-									</select>
-									</td>
-								</tr>
-								<tr>
-									<td><label>Pin code</label></td>
-									<td>: <input type="number" name="sZipCode" required>
-									</td>
-								</tr>								
- 								<tr>
-									<td><label>Adult</label></td>
-									<td>: <select id="adult" class="l1">
+										</td>
+									</tr>
+									<tr>
+										<td><label>Door no/House no </label></td>
+										<td>: <input type="text"
+											name="sHno" required></td>
+									</tr>
+									<tr>
+										<td><label>Street name</label></td>
+										<td>: <input type="text" name="sStreet" required></td>
+									</tr>
+									<tr>
+										<td><label>City</label></td>
+										<td>: <select id="sCity" class="l1"
+											name="sCity" required>
+										</select>
+										</td>
+									</tr>
+									<tr>
+										<td><label>State</label></td>
+										<td>: <select id="sState" class="l1"
+											name="sState" required>
+										</select>
+										</td>
+									</tr>
+									<tr>
+										<td><label>Pin code</label></td>
+										<td>: <input type="number" name="sZipCode" required>
+										</td>
+									</tr>								
+									<tr>
+										<td><label>Adult</label></td>
+										<td>: <select id="adult" class="l1">
+													<option value="1">1</option>
+													<option value="2">2</option>
+													<option value="3">3</option>
+													<option value="4">4</option>
+													<option value="5">5</option>
+													<option value="6">6</option>
+													<option value="7">7</option>
+													<option value="8">8</option>
+													<option value="9">9</option>
+													<option value="10">10</option>
+													<option value="11">11</option>
+													<option value="12">12</option>
+													<option value="13">13</option>
+													<option value="14">14</option>
+													<option value="15">15</option>
+													<option value="16">16</option>
+													<option value="17">17</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td><label>Child</label></td>
+										<td>: <select id="child" class="l1">
+												<option value="0">0</option>
 												<option value="1">1</option>
 												<option value="2">2</option>
 												<option value="3">3</option>
 												<option value="4">4</option>
 												<option value="5">5</option>
-												<option value="6">6</option>
-												<option value="7">7</option>
-												<option value="8">8</option>
-												<option value="9">9</option>
-												<option value="10">10</option>
-												<option value="11">11</option>
-												<option value="12">12</option>
-												<option value="13">13</option>
-												<option value="14">14</option>
-												<option value="15">15</option>
-												<option value="16">16</option>
-												<option value="17">17</option>
-										</select>
-									</td>
-								</tr>
-								<tr>
-									<td><label>Child</label></td>
-									<td>: <select id="child" class="l1">
-											<option value="0">0</option>
-											<option value="1">1</option>
-											<option value="2">2</option>
-											<option value="3">3</option>
-											<option value="4">4</option>
-											<option value="5">5</option>
-											</select>
-									</td>
-								</tr>
-								<tr>
-									<td><label>With Bed</label></td>
-									<td>: <input type="checkbox" name="withbed" required></input></td>
-								</tr>
-								<tr>
-									<td><label>Infant</label></td>
-									<td>: <input type="text" name="Infant" required></td>
-								</tr>
-								<tr>
-									<td colspan="2" align="center">
-										<button id="addBtn" type="button" class="btn btn-info"
-											style="background-color color: #FF4500;"
-											onclick="submitBooking(this);">Create</button>
-										<button id="delBtn" type="button" class="btn btn-info" 
-											style="background-color color: #FF4500;display:none;"
-											onclick="deleteBooking();">Delete</button>	
-									</td>
-								</tr>
-							</table>
+												</select>
+										</td>
+									</tr>
+									<tr>
+										<td><label>With Bed</label></td>
+										<td>: <input type="checkbox" name="withbed" required></input></td>
+									</tr>
+									<tr>
+										<td><label>Infant</label></td>
+										<td>: <input type="text" name="Infant" required></td>
+									</tr>
+									<tr>
+										<td colspan="2" align="center">
+											<button id="addBtn" type="button" class="btn btn-info"
+												style="background-color color: #FF4500;"
+												onclick="submitAlertBooking(this, 'basic');">Create</button>
+											<button id="delBtn" type="button" class="btn btn-info" 
+												style="background-color color: #FF4500;display:none;"
+												onclick="deleteBooking();">Delete</button>	
+										</td>
+									</tr>
+								</table>
+							</div>
+							<div id="PassportInfo" style="display:none;">
+								<table class="New_package">
+									<tr>
+										<th id="h" align="right">New Booking</th>
+										<th id="tha">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<button type="button" class="ID1">
+												<span class="glyphicon glyphicon-refresh"></span> CLEAR
+											</button>
+											<button type="button" class="ID1" class="close" onclick="closeBox2($('#booking #add'), bookingDetails);">
+												<span class="glyphicon glyphicon-remove" id="ap"></span>
+												CLOSE
+											</button>
+										</th>
+									</tr>
+									<tr>
+										<td><label>Name as per passport</label></td>
+										<td>: <input type="text" name="name_as_per_passport"
+											required></td>
+									</tr>
+									<tr>
+										<td><label>Surname</label></td>
+										<td>: <input type="text" name="surname" required></td>
+									</tr>
+									<tr>
+										<td><label>Given name</label></td>
+										<td>: <input type="text" name="given_name" required>
+										</td>
+									</tr>
+									<tr>
+										<td><label>Date of birth</label></td>
+										<td>: <input type="date" name="date_of_birth" required class="dateClass"></td>
+									</tr>
+									<tr>
+										<td><label>Passport number</label></td>
+										<td>: <input type="text" name="passport_number" required></td>
+									</tr>
+									<tr>
+										<td><label>Passport issue date</label></td>
+										<td>: <input type="date" name="passport_issue_date" required class="dateClass"></td>
+									</tr>
+									<tr>
+										<td><label>Passport expiry date</label></td>
+										<td>: <input type="date" name="passport_expiry_date" required class="dateClass"></td>
+									</tr>
+									<tr>
+										<td><label>Place of issue</label></td>
+										<td>: <input type="text" name="place_of_issue" required></td>
+									</tr>
+									<tr>
+										<td><label>Nationality</label></td>
+										<td>: <input type="text" name="nationality" required>
+										</td>
+									</tr>								
+									<tr>
+										<td colspan="2" align="center">
+											<button id="addBtn" type="button" class="btn btn-info"
+												style="background-color color: #FF4500;"
+												onclick="submitBooking(this);">Create</button>
+											<button id="delBtn" type="button" class="btn btn-info" 
+												style="background-color color: #FF4500;display:none;"
+												onclick="deleteBooking();">Delete</button>	
+										</td>
+									</tr>
+								</table>
+							</div>							
 						</form>
 					</div>
 				</div>
@@ -554,18 +559,6 @@
 								name="deletepackage" required style="margin-right: 20px;">
 							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
 							<hr id="dhr">
-							<!--<table id="gblTable">
-								<tr>
-									<td>
-										<p id="showAll"></p>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div id="addPagination"></div>
-									</td>
-								</tr>
-							</table>-->
 							<p id="showTbl"></p>
 						</form>
 					</div>
@@ -575,15 +568,8 @@
 						<label>Enter package name:</label> <input type="text"
 							name="deletepackage" required style="margin-right: 20px;">
 						<button type="submit" class="btn btn-info">Delete</button>
-
-
 						<hr id="dhr">
-
-
 					</form>
-
-
-
 				</div>
 			</div>		
 		</div>
@@ -622,21 +608,6 @@
 									<td><label>DATE_OF_QUERY</label></td>
 									<td>: <input type="date" name="date_of_query" required class="dateClass"></td>
 								</tr>
-<!-- 								<tr>
-									<td><label>Gst Number</label></td>
-									<td>: <select name="Gst_Number" style="width: 180px;">
-											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
-											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
-											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
-											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
-									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
-										style="width: 40px; text-align: center;">&nbsp;%
-									</td>
-								</tr>
-								<tr>
-									<td><label>date of Travel </label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
-								</tr> -->
 								<tr>
 									<td><label>CLIENT_NAME</label></td>
 									<td>: <input type="text" name="client_name"
@@ -694,18 +665,6 @@
 								name="deletepackage" required style="margin-right: 20px;">
 							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
 							<hr id="dhr">
-							<!--<table id="gblTable">
-								<tr>
-									<td>
-										<p id="showAll"></p>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div id="addPagination"></div>
-									</td>
-								</tr>
-							</table>-->
 							<p id="showTbl"></p>
 						</form>
 					</div>
@@ -755,21 +714,6 @@
 									<td><label>DATE_OF_QUERY</label></td>
 									<td>: <input type="date" name="date_of_query" required class="dateClass"></td>
 								</tr>
-<!-- 								<tr>
-									<td><label>Gst Number</label></td>
-									<td>: <select name="Gst_Number" style="width: 180px;">
-											<option value="37AAGCD8245D1ZN">37AAGCD8245D1ZN</option>
-											<option value="36AAGCD8245DIZP">36AAGCD8245DIZP</option>
-											<option value="37BGXPS3317Q1Z9">37BGXPS3317Q1Z9</option>
-											<option value="36BGXPS3317Q1ZB">36BGXPS3317Q1ZB</option>
-									</select> &nbsp; &nbsp; <input type="number" name="Per" value="4"
-										style="width: 40px; text-align: center;">&nbsp;%
-									</td>
-								</tr>
-								<tr>
-									<td><label>date of Travel </label></td>
-									<td>: <input type="date" name="date_of_Travel" required></td>
-								</tr> -->
 								<tr>
 									<td><label>CLIENT_NAME</label></td>
 									<td>: <input type="text" name="client_name"
@@ -827,18 +771,6 @@
 								name="deletepackage" required style="margin-right: 20px;">
 							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
 							<hr id="dhr">
-							<!--<table id="gblTable">
-								<tr>
-									<td>
-										<p id="showAll"></p>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div id="addPagination"></div>
-									</td>
-								</tr>
-							</table>-->
 							<p id="showTbl"></p>
 						</form>
 					</div>
@@ -989,18 +921,6 @@
 								name="findStaff" required style="margin-right: 20px;">
 							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
 							<hr id="dhr">
-							<!--<table id="gblTable">
-								<tr>
-									<td>
-										<p id="showAll"></p>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div id="addPagination"></div>
-									</td>
-								</tr>
-							</table>-->
 							<p id="showTbl"></p>
 					</div>
 				</div>
