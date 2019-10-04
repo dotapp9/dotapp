@@ -48,6 +48,9 @@
 	  }
   }
   function doLogin(elem){
+	  document.loginPanel.reportValidity();
+	  if(!document.loginPanel.checkValidity())
+		  return;
 	  ApiService.getQuery(document.loginPanel, 'select sId, roleName, sFirstName, sLastName, isDisabled from staff where sId=$Login and sPswd=$Password and roleName=$Selection', '/api/1/auth', function(responseData, status){
 		if(responseData.length>0){
 			if('0' !== responseData[0].isDisabled){
@@ -239,6 +242,9 @@ function logoutLogin(){
 }
 
   function submitPackage(event){
+	  document.packages.reportValidity();
+	  if(!document.packages.checkValidity())
+		  return;
 	  var btntxt = event.innerText;
 	  if(btntxt === 'Create'){
 		  ApiService.post(document.packages, 'tour_package', '/api/1/tour_package', function(){
@@ -263,8 +269,12 @@ function logoutLogin(){
 	  }
   }
   function submitStaff(){
+	  document.staff.reportValidity();
+	  if(!document.staff.checkValidity())
+		  return;	  
 	  var oprDesc = $('#stf #add #h').text();
 	  if('Create Staff' === oprDesc){
+		  
 		  document.staff.sPswd.value = document.staff.pswd.value;
 		  ApiService.post(document.staff, 'staff', '/api/1/staff', function(responseData, status){
 			  if(responseData.length > 0 ){
@@ -316,6 +326,9 @@ function enquiryDetails(){
 	});
 }
 function submitSalesEnq(event){
+	  document.salesinq.reportValidity();
+	  if(!document.salesinq.checkValidity())
+		  return;	
 	var btntxt = event.innerText;
 	document.salesinq.sId.value = $('#userName').attr('userId');
 	  if(btntxt === 'Create'){
@@ -346,7 +359,30 @@ function submitSalesEnq(event){
 			  });		  
 	  }	  
 }
+function submitAlertBooking(event, ind){
+	if('basic' === ind){
+		var ret = confirm('Do you want enter Passport Information');
+		if (ret == true) {
+			openPassptBooking();
+		  } else {
+			  submitBooking(event);
+		  }
+	}	
+}
+function openBasicBooking(){
+	loadNewEntryForm('#booking', 'bookinginq', 'Create Booking', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);
+	$('#PassportInfo').hide();
+	$('#BasicInfo').show();
+}
+function openPassptBooking(){
+	loadNewEntryForm('#booking', 'bookinginq', 'Passport Details', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);
+	$('#BasicInfo').hide();
+    $('#PassportInfo').show();
+}
 function submitBooking(event){
+	  document.bookinginq.reportValidity();
+	  if(!document.bookinginq.checkValidity())
+		  return;	
 	var btntxt = event.innerText;
 	document.bookinginq.sId.value = $('#userName').attr('userId');
 	  if(btntxt === 'Create'){
