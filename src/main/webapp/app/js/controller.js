@@ -70,7 +70,8 @@
 			$('#userName').text(responseData[0].sFirstName+' '+responseData[0].sLastName);
 			$('#main').show();
 		}else{
-			alert("Authentication failed.");
+			//alert("Authentication failed.");
+			AlertDialog.show('Error', 'Authentication failed.');
 		}
 	  }, function(){
 		  alert("Authentication failed.");

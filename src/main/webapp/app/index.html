@@ -11,6 +11,18 @@
 <script src="js/service.js"></script>
 </head>
 <body>
+	<div id="dialog-mdl" style="display:none;">
+        <!-- dialog box -->
+        <div id="white-background">
+        </div>
+        <div id="dlgbox">
+            <div id="dlg-header">Error</div>
+            <div id="dlg-body">Authentication failed</div>
+            <div id="dlg-footer">
+                <button onclick="AlertDialog.hide();">OK</button>
+            </div>
+        </div>
+	</div>	
 	<div id="cover-spin"></div>
 	<div id="loginPanel"
 		style="background-image: url(images/dotthome1.jpg); border: 1px solid black; padding-bottom:7px;">

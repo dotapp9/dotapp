@@ -1,3 +1,31 @@
+var Spinner = {
+	start : function(){
+		$('#cover-spin').show(0);
+	},
+	stop : function(){
+		$('#cover-spin').hide(0);
+	}
+};
+var AlertDialog = {
+	show : function(type, message){
+		var whitebg = document.getElementById("white-background");
+        var dlg = document.getElementById("dlgbox");
+        whitebg.style.display = "block";
+        dlg.style.display = "block";
+        
+        var winWidth = window.innerWidth;
+        var winHeight = window.innerHeight;
+        
+        dlg.style.left = (winWidth/2) - 480/2 + "px";
+        dlg.style.top = "150px";
+        $('#dlgbox #dlg-header').text(type);
+        $('#dlgbox #dlg-body').text(message);
+        $('#dialog-mdl').show(0);
+	},
+	hide : function(){
+		$('#dialog-mdl').hide();
+	}
+};
 var ApiService = {
 	headers : {},
 	complete : function(jqXHR, textStatus) {
@@ -6,7 +34,7 @@ var ApiService = {
 		},
 	backEndUrl : '',
 	post : function(requestData, tableId, url, successCallback, errorCallback){
-		$('#cover-spin').show(0);
+		Spinner.start();
 		var request = {};
 		var keyElems = "";
 		var tokenElems = "";
@@ -45,16 +73,16 @@ var ApiService = {
 		success: function(responseData, textStatus, jqXHR) {
 			ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
 			successCallback(responseData, textStatus);
-			$('#cover-spin').hide();
+			Spinner.stop();
 		},
 		error: function (responseData, textStatus, errorThrown) {
 			errorCallback('POST failed.', textStatus);
-			$('#cover-spin').hide();
+			Spinner.stop();
 		}
 	});
 	},
 	put : function(updateData, whereData, tableId, url, successCallback, errorCallback){
-		$('#cover-spin').show(0);
+		Spinner.start();
 		var request = {};
 		var keyElems = "";
 		var tokenElems = "";
@@ -107,16 +135,16 @@ var ApiService = {
 			success: function(responseData, textStatus, jqXHR) {
 				//ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
 				successCallback(responseData, textStatus);
-				$('#cover-spin').hide();
+				Spinner.stop();
 			},
 			error: function (responseData, textStatus, errorThrown) {
 				errorCallback('PUT failed.', textStatus);
-				$('#cover-spin').hide();
+				Spinner.stop();
 			}
 		});
 	},
 	remove : function(requestData, whereData, tableId, url, successCallback, errorCallback){
-		$('#cover-spin').show(0);
+		Spinner.start();
 		var request = {};
 		var keyElems = "";
 		var tokenElems = "";
@@ -147,16 +175,16 @@ var ApiService = {
 			dataType: 'json',
 			success: function(responseData, textStatus, jqXHR) {
 				successCallback(responseData, textStatus);
-				$('#cover-spin').hide();
+				Spinner.stop();
 			},
 			error: function (responseData, textStatus, errorThrown) {
 				errorCallback('PUT failed.', textStatus);
-				$('#cover-spin').hide();
+				Spinner.stop();
 			}
 		});		
 	},
 	getQuery : function(requestData, query, url, successCallback, errorCallback){
-		$('#cover-spin').show(0);
+		Spinner.start();
 		var request = {};
 		var keyElems = "";
 		var tokenElems = "";
@@ -169,23 +197,23 @@ var ApiService = {
 			}
 		}
 		request.query = query;
-	var ajaxRq = $.ajax({
-		type: 'POST',
-		url: ApiService.backEndUrl+url,
-		headers : ApiService.headers,
-		contentType:'application/json',
-		data: JSON.stringify(request),
-		dataType: 'json',
-		success: function(responseData, textStatus, jqXHR) {
-			ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
-			successCallback(responseData, textStatus);
-			$('#cover-spin').hide();
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			errorCallback('POST failed.', textStatus);
-			$('#cover-spin').hide();
-		}
-	});
+		var ajaxRq = $.ajax({
+			type: 'POST',
+			url: ApiService.backEndUrl+url,
+			headers : ApiService.headers,
+			contentType:'application/json',
+			data: JSON.stringify(request),
+			dataType: 'json',
+			success: function(responseData, textStatus, jqXHR) {
+				ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
+				successCallback(responseData, textStatus);
+				Spinner.stop();
+			},
+			error: function (responseData, textStatus, errorThrown) {
+				errorCallback('POST failed.', textStatus);
+				Spinner.stop();
+			}
+		});
 	}
 }
 function createTableFromJSON1(tableId, myBooks, rowCallback, visibleCols) {
