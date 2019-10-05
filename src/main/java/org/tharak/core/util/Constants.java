@@ -7,4 +7,5 @@ public interface Constants {
 	String SERVICE_PATH = "/{version}/{serviceId}";
 	String HEALTH_PATH = "/{version}/health";
 	String AUTH_PATH = "/{version}/auth";
+	String MAIL_PATH = "/{version}/sendMail";
 }

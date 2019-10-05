@@ -24,6 +24,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +42,14 @@ import lombok.AllArgsConstructor;
 @RestController
 @AllArgsConstructor
 public class DotEndpoint {
+    private JavaMailSender javaMailSender;
 	private DataSourceMgr mgr;
+	@RequestMapping(value = Constants.MAIL_PATH, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Map<String, String>>> doSendMail(Principal principal, @PathVariable String version, @RequestHeader Map<String, String> rqHeaders, @RequestBody Map<String, String> requestBody, HttpSession httpSession, HttpServletRequest request)throws IOException {
+		List<Map<String, String>> result = doMailDelegate(principal, "email", rqHeaders, requestBody, httpSession);
+		
+		return new ResponseEntity<List<Map<String,String>>>(result, addHeaders(httpSession, request), HttpStatus.OK);
+	}
 	@RequestMapping(value = Constants.AUTH_PATH, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Map<String, String>>> doAuth(Principal principal, @PathVariable String version, @RequestHeader Map<String, String> rqHeaders, @RequestBody Map<String, String> requestBody, HttpSession httpSession, HttpServletRequest request)throws IOException {
 		List<Map<String, String>> result = doBodyDelegate(principal, "auth", rqHeaders, requestBody, httpSession);
@@ -163,5 +172,23 @@ public class DotEndpoint {
 		}
 		return false;
 	}
+	private List<Map<String, String>> doMailDelegate(Principal principal, String serviceId, Map<String, String> rqHeaders, Map<String, String> requestBody, HttpSession httpSession) {
+		if(requestBody.get("email") != null) {
+			SimpleMailMessage msg = new SimpleMailMessage();
+	        msg.setTo(requestBody.get("email"));
 	
+	        msg.setSubject("Change Password Link");
+	        msg.setText("Hello World \n Spring Boot Email");
+	        try {
+	        	javaMailSender.send(msg);
+	        }catch (Exception ex) {
+	        	ex.printStackTrace();
+			}
+		}
+        ArrayList<Map<String, String>> resultList = new ArrayList<Map<String,String>>();
+        HashMap<String, String> resultMap = new HashMap<String, String>();
+        resultMap.put("result", "Mail Sent");
+        resultList.add(resultMap);
+        return resultList;
+	}
 }
