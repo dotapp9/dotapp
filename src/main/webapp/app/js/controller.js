@@ -139,12 +139,13 @@
 	  }
 	  $(id+' #add #addBtn').text('Modify');
 	  $(id+' #add #delBtn').show();
+	  
   }
 
   function showViewStaff(){
 	$('#stf #add').hide();
 	$('#stf #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sBirthDate, isDisabled, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
+	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sMail, sBirthDate, isDisabled, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
 	var staffData = responseData;
 	createTableFromJSON('#stf #enq', staffData, function(row, tableData){
 		var frmData = tableData[row];
@@ -248,14 +249,14 @@ function logoutLogin(){
 		  return;
 	  var btntxt = event.innerText;
 	  if(btntxt === 'Create'){
-		  ApiService.post(document.packages, 'tour_package', '/api/1/tour_package', function(){
+		  ApiService.post([document.packages], 'tour_package', '/api/1/tour_package', function(){
 			alert("Package Created Successfully.");
 			enquiryPkg();
 		  }, function(){
 			
 		  });
 	  }else{
-		  ApiService.put(document.packages, ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
+		  ApiService.put([document.packages], ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
 			  if(responseData.length > 0 ){
 				 if(responseData[0]['record_count'] > 0){
 					 alert("Package Updated Successfully.");
@@ -277,7 +278,7 @@ function logoutLogin(){
 	  if('Create Staff' === oprDesc){
 		  
 		  document.staff.sPswd.value = document.staff.pswd.value;
-		  ApiService.post(document.staff, 'staff', '/api/1/staff', function(responseData, status){
+		  ApiService.post([document.staff], 'staff', '/api/1/staff', function(responseData, status){
 			  if(responseData.length > 0 ){
 				 if(responseData[0]['record_count'] > 0){
 					 alert("Staff Created Successfully.");
@@ -296,7 +297,7 @@ function logoutLogin(){
 		  }else{
 			  document.staff.sPswd.value = undefined;
 		  }
-		  ApiService.put(document.staff, ['sId'], 'staff', '/api/1/staff', function(responseData, status){
+		  ApiService.put([document.staff], ['sId'], 'staff', '/api/1/staff', function(responseData, status){
 			  if(responseData.length > 0 ){
 				 if(responseData[0]['record_count'] > 0){
 					 alert("Staff Created Successfully.");
@@ -333,7 +334,7 @@ function submitSalesEnq(event){
 	var btntxt = event.innerText;
 	document.salesinq.sId.value = $('#userName').attr('userId');
 	  if(btntxt === 'Create'){
-		  ApiService.post(document.salesinq, 'sales', '/api/1/sales', function(responseData, status){
+		  ApiService.post([document.salesinq], 'sales', '/api/1/sales', function(responseData, status){
 			  if(responseData.length > 0 ){
 				 if(responseData[0]['record_count'] > 0){
 					 alert("Sales Enquiry Created Successfully.");
@@ -346,7 +347,7 @@ function submitSalesEnq(event){
 				  alert("Sales Enquiry Creation failed.");
 			  });
 	  }else{
-		  ApiService.put(document.salesinq, ['client_name'], 'sales', '/api/1/sales', function(responseData, status){
+		  ApiService.put([document.salesinq], ['client_name'], 'sales', '/api/1/sales', function(responseData, status){
 			  if(responseData.length > 0 ){
 				 if(responseData[0]['record_count'] > 0){
 					 alert("Sales Enquiry Updated Successfully.");
@@ -364,30 +365,42 @@ function submitAlertBooking(event, ind){
 	if('basic' === ind){
 		var ret = confirm('Do you want enter Passport Information');
 		if (ret == true) {
+			document.basicbooking.reportValidity();
+			if(!document.basicbooking.checkValidity())
+				  return;
 			openPassptBooking();
 		  } else {
-			  submitBooking(event);
+			  submitBooking(event, [document.basicbooking]);
 		  }
+	}else{
+		document.passportbooking.reportValidity();
+		if(!document.passportbooking.checkValidity())
+		  return;
+		submitBooking(event, [document.basicbooking, document.passportbooking]);
 	}	
 }
 function openBasicBooking(){
-	loadNewEntryForm('#booking', 'bookinginq', 'Create Booking', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);
+	loadNewEntryForm('#booking', 'basicbooking', 'Create Booking', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);
 	$('#PassportInfo').hide();
 	$('#BasicInfo').show();
 }
 function openPassptBooking(){
-	loadNewEntryForm('#booking', 'bookinginq', 'Passport Details', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);
+	var textInd = $('#booking #add #BasicInfo #h').text();
+	if('Create Booking' === textInd)
+		loadNewEntryForm('#booking', 'passportbooking', 'Enter Passport Details', '#client_name', [loadPackageIds, loadStateMaster, loadCityMaster]);
+	else
+		{
+		$('#booking #add #PassportInfo #addBtn').text('Modify');
+		$('#booking #add #PassportInfo #delBtn').show();
+		}
 	$('#BasicInfo').hide();
     $('#PassportInfo').show();
 }
-function submitBooking(event){
-	  document.bookinginq.reportValidity();
-	  if(!document.bookinginq.checkValidity())
-		  return;	
+function submitBooking(event, request){
 	var btntxt = event.innerText;
-	document.bookinginq.sId.value = $('#userName').attr('userId');
+	document.basicbooking.sId.value = $('#userName').attr('userId');
 	  if(btntxt === 'Create'){
-		  ApiService.post(document.bookinginq, 'bookings', '/api/1/bookings', function(responseData, status){
+		  ApiService.post(request, 'bookings', '/api/1/bookings', function(responseData, status){
 			  if(responseData.length > 0 ){
 				 if(responseData[0]['record_count'] > 0){
 					 alert("Booking Created Successfully.");
@@ -400,7 +413,7 @@ function submitBooking(event){
 				  alert("Booking Creation failed.");
 			  });
 	  }else{
-		  ApiService.put(document.bookinginq, ['client_name'], 'bookings', '/api/1/bookings', function(responseData, status){
+		  ApiService.put(request, ['client_name'], 'bookings', '/api/1/bookings', function(responseData, status){
 			  if(responseData.length > 0 ){
 				 if(responseData[0]['record_count'] > 0){
 					 alert("Booking Updated Successfully.");
@@ -414,6 +427,7 @@ function submitBooking(event){
 			  });		  
 	  }	 	
 }
+
 function loadPackageIds(){
 	if($('#booking #Tour_Name').prop('options').length == 0){
 		ApiService.getQuery([], 'select Tour_Id, Tour_Name from tour_package', '/api/1/tour_package', function(responseData, status){
@@ -437,6 +451,8 @@ function bookingDetails(){
 		addFillEntry('#booking', frmData, "Booking Details");
 		$('#booking #add #client_name').attr('readOnly','readOnly');
 		$('#booking #enq').hide();
+		$('#PassportInfo').hide();
+		$('#BasicInfo').show();
 	});
 	}, function(responseData, status){
 		
@@ -510,6 +526,7 @@ function loadNewEntryForm(moduleId, frmName, lblHdr, id, contrls){
 }
 
 function deleteStaff(){
+	AlertDialog.show('Info', 'Are you sure?', function(event){
 	if(document.staff.sId.value.toLowerCase() === 'Admin'.toLowerCase()){
 		alert('Admin User Cannot be removed');
 		showViewStaff();
@@ -526,9 +543,11 @@ function deleteStaff(){
 	  alert("Staff deletion failed.");
 	  }, function(){
 		  alert("Staff deletion failed.");
-	  });	
+	  });
+	}, function(event){});
 }
 function deletePackage(){
+	AlertDialog.show('Info', 'Are you sure?', function(event){
   ApiService.remove(document.packages, ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
 	  if(responseData.length > 0 ){
 		 if(responseData[0]['record_count'] > 0){
@@ -541,19 +560,35 @@ function deletePackage(){
 	  }, function(){
 		  alert("Package deletion failed.");
 	  });	
+	}, function(event){});
 }
 function deleteSales(){
-	document.salesinq.sId.value = $('#userName').attr('userId');
-	  ApiService.remove(document.salesinq, ['client_name', 'sId'], 'sales', '/api/1/sales', function(responseData, status){
-		  if(responseData.length > 0 ){
-			 if(responseData[0]['record_count'] > 0){
-				 alert("Sales Inquiry deletion Successfully.");
-				 enquiryDetails();
-				 return;
-			 }
-		  }
-		  alert("Sales Inquiry deletion failed.");
-		  }, function(){
+	AlertDialog.show('Info', 'Are you sure?', function(event){
+		document.salesinq.sId.value = $('#userName').attr('userId');
+		  ApiService.remove(document.salesinq, ['client_name', 'sId'], 'sales', '/api/1/sales', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 alert("Sales Inquiry deletion Successfully.");
+					 enquiryDetails();
+					 return;
+				 }
+			  }
 			  alert("Sales Inquiry deletion failed.");
-		  });	
+			  }, function(){
+				  alert("Sales Inquiry deletion failed.");
+			  });		
+	}, function(event){});
+}
+function doForgotPswd(){
+	document.loginPanel.reportValidity();
+	  if(!document.loginPanel.checkValidity())
+		  return;	
+	AlertDialog.show('Info', 'Password sent to Registered email.');
+	ApiService.getQuery(document.loginPanel, 'select sMail from staff where sId=$Login', '/api/1/auth', function(responseData, status){
+		if(responseData.length > 0 ){
+			ApiService.sendMail({email : responseData[0].sMail}, '/api/1/sendMail', function(responseData, status){
+				
+			},function(responseData, status){});
+		}
+	}, function(responseData, status){});
 }

@@ -19,7 +19,8 @@
             <div id="dlg-header">Error</div>
             <div id="dlg-body">Authentication failed</div>
             <div id="dlg-footer">
-                <button onclick="AlertDialog.hide();">OK</button>
+                <button id="btnOk">OK</button>
+				<button id="btnCancel" onclick="AlertDialog.hide();">Cancel</button>
             </div>
         </div>
 	</div>	
@@ -43,10 +44,16 @@
 						name="Login" placeholder="login" value="" required></input> 
 					<input type="password"
 						id="password" class="fadeIn third loginPassword" name="Password"
-						placeholder="password" value="" required></input> 
-					<input type="button"
+						placeholder="password" value=""></input> 
+						<div class="container">
+							<input type="button"
 						class="fadeIn fourth loginBtn" onclick="doLogin(this);"
 						value="Login"></input>
+						  </div>
+						<div class="container" style="margin-top:20px;">
+							<span class="psw"><a class="hrefClass" onclick="doForgotPswd();">Forgot password?</a></span>
+						  </div>  
+					<br>
 				</div>
 			</div>
 		</form>
@@ -365,9 +372,9 @@
 
 				<div class="col-md-10 text-left" id="add" style="display:none;">
 					<div class="table-responsive">
-						<form name="bookinginq" method="post">
-							<input type="hidden" name="sId" value="test"></input>
 							<div id="BasicInfo" style="display:none;">
+								<form name="basicbooking" method="post">
+								<input type="hidden" name="sId" value="test"></input>
 								<table class="New_package">
 									<tr>
 										<th id="h" align="right">New Booking</th>
@@ -478,7 +485,7 @@
 									</tr>
 									<tr>
 										<td><label>With Bed</label></td>
-										<td>: <input type="checkbox" name="withbed" required></input></td>
+										<td>: <input type="checkbox" name="withbed"></input></td>
 									</tr>
 									<tr>
 										<td><label>Infant</label></td>
@@ -495,8 +502,10 @@
 										</td>
 									</tr>
 								</table>
+								</form>
 							</div>
 							<div id="PassportInfo" style="display:none;">
+								<form name="passportbooking" method="post">
 								<table class="New_package">
 									<tr>
 										<th id="h" align="right">New Booking</th>
@@ -553,20 +562,21 @@
 										<td colspan="2" align="center">
 											<button id="addBtn" type="button" class="btn btn-info"
 												style="background-color color: #FF4500;"
-												onclick="submitBooking(this);">Create</button>
+												onclick="submitAlertBooking(this, '');">Create</button>
 											<button id="delBtn" type="button" class="btn btn-info" 
 												style="background-color color: #FF4500;display:none;"
 												onclick="deleteBooking();">Delete</button>	
 										</td>
 									</tr>
 								</table>
+								</form>
 							</div>							
-						</form>
+						
 					</div>
 				</div>
 				<div id="enq" style="display:none;">
 					<div class="col-md-10 text-left">
-						<form style="margin-top: 20px;">
+						<form name="bookinginq" style="margin-top: 20px;">
 							<label>Enter package name:</label> <input type="text"
 								name="deletepackage" required style="margin-right: 20px;">
 							<button type="button" class="btn btn-info" onclick="findPackage();">Find</button>
@@ -849,7 +859,10 @@
 									<td><label>Conform Password</label></td>
 									<td id="cnfrmPswdtd">: <input type="password" id="cnfrmPswd" required></td>
 								</tr>
-													 								
+								<tr>
+									<td><label>Email</label></td>
+									<td>: <input type="email" id="sMail" name="sMail" required></td>
+								</tr>				 								
 								<tr>
 									<td><label>Birthday </label></td>
 									<td>: <input type="date" name="sBirthDate" required class="dateClass"></td>

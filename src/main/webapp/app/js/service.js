@@ -6,8 +6,9 @@ var Spinner = {
 		$('#cover-spin').hide(0);
 	}
 };
+
 var AlertDialog = {
-	show : function(type, message){
+	show : function(type, message, okCallback, cancelCallback){
 		var whitebg = document.getElementById("white-background");
         var dlg = document.getElementById("dlgbox");
         whitebg.style.display = "block";
@@ -20,6 +21,31 @@ var AlertDialog = {
         dlg.style.top = "150px";
         $('#dlgbox #dlg-header').text(type);
         $('#dlgbox #dlg-body').text(message);
+        $('#dlgbox #btnOk').show();
+        $('#dlgbox #btnCancel').hide();
+        if(okCallback){
+        	$('#dlgbox #btnOk').click(function(event){
+        		try{
+        			okCallback(event);
+        		}finally{
+        			AlertDialog.hide();
+        		}
+        		});
+        }else{
+        	$('#dlgbox #btnOk').click(function(event){
+        		AlertDialog.hide();
+        		});
+        }
+        if(cancelCallback){
+        	$('#dlgbox #btnCancel').click(function(event){
+        		try{
+        			cancelCallback(event);
+        		}finally{
+        			AlertDialog.hide();
+        		}
+        		});
+        	$('#dlgbox #btnCancel').show();
+        }
         $('#dialog-mdl').show(0);
 	},
 	hide : function(){
@@ -27,6 +53,20 @@ var AlertDialog = {
 	}
 };
 var ApiService = {
+	holder : [],
+	isTran : false,
+	beginTran : function(){
+		this.holder = [];
+		this.isTran = true;
+	},
+	endTran : function(){
+		if(this.isTran){
+			this.isTran = false;
+			$.each(this.holder, function (index, request) {
+				$.ajax(request);
+			});
+		}
+	},
 	headers : {},
 	complete : function(jqXHR, textStatus) {
 		console.log(jqXHR.getResponseHeader('siteid'));
@@ -39,47 +79,56 @@ var ApiService = {
 		var keyElems = "";
 		var tokenElems = "";
 		var count=0;
-		for(var idx=0; idx<requestData.length; idx++){
-			var packageItem = requestData[idx];
-			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
-				if(packageItem['name'].trim() !== ""){
-					if(count>0){
-						keyElems +=","+packageItem['name'];
-						tokenElems += ",$"+packageItem['name'];
-					}else{
-						keyElems +=packageItem['name'];
-						tokenElems += "$"+packageItem['name'];
-					}
-					count++;
-					if(packageItem['type'].trim() === "checkbox"){
-						var userType = packageItem.checked === false ? 0 : 1;
-						request[packageItem['name']] = userType;
-					}else{
-						request[packageItem['name']] = packageItem['value'];
+		if(!Array.isArray(requestData))
+			throw new Error('Request should be Array');
+		$.each(requestData, function (index, data) {
+			$.each(data, function (idx, packageItem) {
+				if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
+					if(packageItem['name'].trim() !== ""){
+						if(count>0){
+							keyElems +=","+packageItem['name'];
+							tokenElems += ",$"+packageItem['name'];
+						}else{
+							keyElems +=packageItem['name'];
+							tokenElems += "$"+packageItem['name'];
+						}
+						count++;
+						if(packageItem['type'].trim() === "checkbox"){
+							var userType = packageItem.checked === false ? 0 : 1;
+							request[packageItem['name']] = userType;
+						}else{
+							request[packageItem['name']] = packageItem['value'];
+						}
 					}
 				}
-			}
-		}
+			});				
+		});
 		var query = "INSERT INTO "+tableId+"("+keyElems+") VALUES ("+tokenElems+")";
 		request.query = query;
 		console.log(JSON.stringify(request));
-	$.ajax({
-		type: 'POST',
-		url: ApiService.backEndUrl+url,
-		headers : ApiService.headers,
-		contentType:'application/json',
-		data: JSON.stringify(request),
-		dataType: 'json',
-		success: function(responseData, textStatus, jqXHR) {
-			ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
-			successCallback(responseData, textStatus);
-			Spinner.stop();
-		},
-		error: function (responseData, textStatus, errorThrown) {
-			errorCallback('POST failed.', textStatus);
+		var ajaxRequest = {
+				type: 'POST',
+				url: ApiService.backEndUrl+url,
+				headers : ApiService.headers,
+				contentType:'application/json',
+				data: JSON.stringify(request),
+				dataType: 'json',
+				success: function(responseData, textStatus, jqXHR) {
+					ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
+					successCallback(responseData, textStatus);
+					Spinner.stop();
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					errorCallback('POST failed.', textStatus);
+					Spinner.stop();
+				}
+			};
+		if(!this.isTran)
+			$.ajax(ajaxRequest);
+		else{
+			this.holder.push(ajaxRequest);
 			Spinner.stop();
 		}
-	});
 	},
 	put : function(updateData, whereData, tableId, url, successCallback, errorCallback){
 		Spinner.start();
@@ -88,31 +137,46 @@ var ApiService = {
 		var tokenElems = "";
 		var query = "UPDATE "+tableId+" SET ";
 		var count=0;
-		for(var idx=0; idx<updateData.length; idx++){
-			var packageItem = updateData[idx];
-			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
-				if(packageItem['name'].trim() !== "" && whereData.indexOf(packageItem['name'].trim()) === -1 && packageItem['value'] !== undefined && packageItem['value'] !== 'undefined'){
-					if(count>0){
-						query += ","+packageItem['name']+'='+"$"+packageItem['name'];
-					}else{
-						query += packageItem['name']+'='+"$"+packageItem['name'];
-					}
-					count++;
-					if(packageItem['type'].trim() === "checkbox"){
-						var userType = packageItem.checked === false ? 0 : 1;
-						request[packageItem['name']] = userType;
-					}else{
-						if(packageItem['value'] !== undefined && packageItem['value'] !== 'undefined')
-							request[packageItem['name']] = packageItem['value'];
+		if(!Array.isArray(updateData))
+			throw new Error('Request should be Array');
+		$.each(updateData, function (index, data) {
+			$.each(data, function (idx, packageItem) {
+//		for(var idx=0; idx<updateData.length; idx++){
+				//var packageItem = updateData[idx];
+				if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
+					if(packageItem['name'].trim() !== "" && whereData.indexOf(packageItem['name'].trim()) === -1 && packageItem['value'] !== undefined && packageItem['value'] !== 'undefined'){
+						if(count>0){
+							query += ","+packageItem['name']+'='+"$"+packageItem['name'];
+						}else{
+							query += packageItem['name']+'='+"$"+packageItem['name'];
+						}
+						count++;
+						if(packageItem['type'].trim() === "checkbox"){
+							var userType = packageItem.checked === false ? 0 : 1;
+							request[packageItem['name']] = userType;
+						}else{
+							if(packageItem['value'] !== undefined && packageItem['value'] !== 'undefined')
+								request[packageItem['name']] = packageItem['value'];
+						}
 					}
 				}
-			}
-		}
+			});
+		});
 		count=0;
 		query += " WHERE ";
-		for(var idx=0; idx<whereData.length; idx++){
-			var col = whereData[idx];
-			var colData = updateData[col].value;
+		function findData(key){
+			var retValue = '';
+			$.each(updateData, function (idx, data) {
+				if(data[key] !== undefined && data[key].value !== undefined && data[key].value.trim() !== "")
+					retValue = data[key].value;
+					return;
+			});
+			return retValue;
+		}
+		$.each(whereData, function (idx, col) {
+		//for(var idx=0; idx<whereData.length; idx++){
+			//var col = whereData[idx];
+			var colData = findData(col);//updateData[col].value;
 			if(colData.trim() !== ''){
 				if(count>0){
 					query += " AND "+col+'='+"$"+col;
@@ -122,7 +186,7 @@ var ApiService = {
 				count++;
 				request[col] = colData;
 			}
-		}
+		});
 		request.query = query;
 		console.log(request);
 		$.ajax({
@@ -189,13 +253,15 @@ var ApiService = {
 		var keyElems = "";
 		var tokenElems = "";
 		var count=0;
-		for(var idx=0; idx<requestData.length; idx++){
-			var packageItem = requestData[idx];
+		$.each(requestData, function (idx, packageItem) {
+		/*for(var idx=0; idx<requestData.length; idx++){
+			var packageItem = requestData[idx];*/
 			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
-				if(packageItem['name'] !== "")
+				var paramName = packageItem['name'];
+				if(paramName !== "" && query.indexOf('$'+paramName) > -1)
 				request[packageItem['name']] = packageItem['value'];
 			}
-		}
+		});
 		request.query = query;
 		var ajaxRq = $.ajax({
 			type: 'POST',
@@ -203,6 +269,25 @@ var ApiService = {
 			headers : ApiService.headers,
 			contentType:'application/json',
 			data: JSON.stringify(request),
+			dataType: 'json',
+			success: function(responseData, textStatus, jqXHR) {
+				ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
+				successCallback(responseData, textStatus);
+				Spinner.stop();
+			},
+			error: function (responseData, textStatus, errorThrown) {
+				errorCallback('POST failed.', textStatus);
+				Spinner.stop();
+			}
+		});
+	},
+	sendMail : function(requestData, url, successCallback, errorCallback){
+		var ajaxRq = $.ajax({
+			type: 'POST',
+			url: ApiService.backEndUrl+url,
+			headers : ApiService.headers,
+			contentType:'application/json',
+			data: JSON.stringify(requestData),
 			dataType: 'json',
 			success: function(responseData, textStatus, jqXHR) {
 				ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
