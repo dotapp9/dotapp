@@ -62,6 +62,7 @@ var ApiService = {
 	endTran : function(){
 		if(this.isTran){
 			this.isTran = false;
+			Spinner.start();
 			$.each(this.holder, function (index, request) {
 				$.ajax(request);
 			});
@@ -247,6 +248,52 @@ var ApiService = {
 			}
 		});		
 	},
+	getQueryWithCrit : function(requestData, selectData, whereData, tableId, url, successCallback, errorCallback){
+		Spinner.start();
+		var request = {};
+		var query = 'SELECT '+selectData;
+		var count=0;
+		query += " FROM "+tableId;
+		if(whereData !== undefined && whereData.length > 0){
+			query += " WHERE ";
+			$.each(whereData, function (idx, col) {
+				var colData = requestData[col.id].value;
+				if(colData.trim() !== ''){
+					if(count>0){
+						query += " AND "+col.id+'='+"$"+col;
+					}else{
+						query += col.id+'='+"$"+col.id;
+					}
+					count++;
+					request[col.id] = colData;
+				}
+			});
+		}
+		request.query = query;
+		var ajaxRequest = {
+				type: 'POST',
+				url: ApiService.backEndUrl+url,
+				headers : ApiService.headers,
+				contentType:'application/json',
+				data: JSON.stringify(request),
+				dataType: 'json',
+				success: function(responseData, textStatus, jqXHR) {
+					ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
+					successCallback(responseData, textStatus);
+					Spinner.stop();
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					errorCallback('POST failed.', textStatus);
+					Spinner.stop();
+				}
+			};
+		if(!this.isTran)
+			$.ajax(ajaxRequest);
+		else{
+			this.holder.push(ajaxRequest);
+			Spinner.stop();
+		}		
+	},
 	getQuery : function(requestData, query, url, successCallback, errorCallback){
 		Spinner.start();
 		var request = {};
@@ -254,8 +301,6 @@ var ApiService = {
 		var tokenElems = "";
 		var count=0;
 		$.each(requestData, function (idx, packageItem) {
-		/*for(var idx=0; idx<requestData.length; idx++){
-			var packageItem = requestData[idx];*/
 			if(packageItem['localName'] === 'input' || packageItem['localName'] === 'select'){
 				var paramName = packageItem['name'];
 				if(paramName !== "" && query.indexOf('$'+paramName) > -1)
@@ -263,23 +308,29 @@ var ApiService = {
 			}
 		});
 		request.query = query;
-		var ajaxRq = $.ajax({
-			type: 'POST',
-			url: ApiService.backEndUrl+url,
-			headers : ApiService.headers,
-			contentType:'application/json',
-			data: JSON.stringify(request),
-			dataType: 'json',
-			success: function(responseData, textStatus, jqXHR) {
-				ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
-				successCallback(responseData, textStatus);
-				Spinner.stop();
-			},
-			error: function (responseData, textStatus, errorThrown) {
-				errorCallback('POST failed.', textStatus);
-				Spinner.stop();
-			}
-		});
+		var ajaxRequest = {
+				type: 'POST',
+				url: ApiService.backEndUrl+url,
+				headers : ApiService.headers,
+				contentType:'application/json',
+				data: JSON.stringify(request),
+				dataType: 'json',
+				success: function(responseData, textStatus, jqXHR) {
+					ApiService.headers['siteid'] = jqXHR.getResponseHeader('siteid');
+					successCallback(responseData, textStatus);
+					Spinner.stop();
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					errorCallback('POST failed.', textStatus);
+					Spinner.stop();
+				}
+			};
+		if(!this.isTran)
+			$.ajax(ajaxRequest);
+		else{
+			this.holder.push(ajaxRequest);
+			Spinner.stop();
+		}
 	},
 	sendMail : function(requestData, url, successCallback, errorCallback){
 		var ajaxRq = $.ajax({
@@ -425,4 +476,26 @@ function addPagination(id, myBooks, recsPerPage, callback){
 	html.append(endRow);
 	$(id).empty();
 	$(id).append(html);
+}
+function addSearchBar(id, fields, changeCallback, searchCallback){
+	var html = '<select class="l1" id="searchChg">';
+	var frmHtml = $('<form name="'+id+'Search"><label>Search By:&nbsp;</label></form>');
+	var elemHtml = '';
+	var idx=0;
+	$.each(fields, function (index, field) {
+		html += '<option value="'+field.id+'" '+((idx==0)?"selected":"")+'>'+field.title+'</option>';
+		elemHtml += '<input type="'+field.type+'" name="'+field.id+'" '+((idx==0)?"required":"")+' id="'+field.id+'" style="margin-left: 5px;margin-right: 10px;'+((idx==0)?"":"display:none;")+'">';
+		idx++;
+	});
+	html += '</select>';
+	var htmlElem = $(html);
+	htmlElem.change(changeCallback);
+	frmHtml.append(htmlElem);
+	var btnElem = $('<button type="button" class="btn btn-info">Find</button>');
+	btnElem.click(searchCallback);
+	frmHtml.append($(elemHtml));
+	frmHtml.append(btnElem);
+	$('#'+id+' #enq #searchBar').empty();
+	$('#'+id+' #enq #searchBar').append(frmHtml);
+	
 }

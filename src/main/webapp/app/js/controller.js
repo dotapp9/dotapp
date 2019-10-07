@@ -8,9 +8,10 @@
   };
   $( "#cnfrmPswdtd" ).focusout(function() {
 	  if($('#pswd').val() !== $('#cnfrmPswd').val()){
-		  alert('Passwords should be matched');
+		  AlertDialog.show('Info', 'Passwords should be matched');
 	  }
   });
+  
   function addActive(elem){
 	  elem.addClass( "active" );
   }
@@ -54,7 +55,7 @@
 	  ApiService.getQuery(document.loginPanel, 'select sId, roleName, sFirstName, sLastName, isDisabled from staff where sId=$Login and sPswd=$Password and roleName=$Selection', '/api/1/auth', function(responseData, status){
 		if(responseData.length>0){
 			if('0' !== responseData[0].isDisabled){
-				alert("User has been Locked.");
+				AlertDialog.show('Error', "User has been Locked.");
 				return;
 			}
 			if('admin' === responseData[0].roleName.toLowerCase()){
@@ -70,11 +71,10 @@
 			$('#userName').text(responseData[0].sFirstName+' '+responseData[0].sLastName);
 			$('#main').show();
 		}else{
-			//alert("Authentication failed.");
 			AlertDialog.show('Error', 'Authentication failed.');
 		}
 	  }, function(){
-		  alert("Authentication failed.");
+		  AlertDialog.show('Error', 'Authentication failed.');
 	  });
   }
   function addMenu(id){
@@ -92,21 +92,20 @@
 	  $(parentid+' #'+show).show();
 	  $(parentid+' #'+hide).hide();
   }
-  function enquiryPkg(){
+  function enquiryPkg(frm){
+	  var searchBarData = [{'id':'Tour_Name','title':'Tour Name', 'type':'text'}, {'id':'date_of_Travel', 'title': 'Date Of Travel', 'type': 'date'}];
+	  addSearchBar('pkg', searchBarData, function(event){
+		onOrOffControls('#pkg #enq', searchBarData, false, document.pkgSearch);
+		onOrOffControls('#pkg #enq', [findControl(event.target.value, searchBarData)], true, document.pkgSearch);
+	  }, function(event){
+		  document.pkgSearch.reportValidity();
+		  if(!document.pkgSearch.checkValidity())
+			  return;
+		  TourPackage.get(document.pkgSearch, searchBarData);
+	  });	  
 	  $('#pkg #add').hide();
 	  $('#pkg #enq').show();
-	  ApiService.getQuery(document.loginPanel, 'select Tour_Id,Tour_Name, Gst_Number,Per,date_of_Travel,No_Of_Passengers,No_Of_Adult,No_Of_Child,Tour_Cost_Per_Adult,Tour_Cost_Per_Adult_With_Twin_Share_Base,Tour_Cost_Per_Adult_With_Triple_Share_Base,Child_With_Bed,Child_Without_Bed,infant_Cost,No_Of_days,countries_visiting,Description,Per_Child,Per_Adult,Per_Infant from tour_package', '/api/1/tour_package', function(responseData, status){
-	  var pkgs = responseData;
-	  var visibleCols = ['Tour_Name', 'date_of_Travel', 'No_Of_Passengers', 'No_Of_days'];
-	  createTableFromJSON('#pkg #enq', pkgs, function(row, tableData){
-		  $('#pkg #newBtn').click();
-		  $('#pkg #add #Tour_Name').attr('readOnly','readOnly');
-			addFillEntry('#pkg', tableData[row], "Package Details");
-			$('#pkg #enq').hide();
-		}, visibleCols);
-	  }, function(){
-
-	  });
+	  TourPackage.get(frm);
   }
 
   function addFillEntry(id, tableData, lblHdr){
@@ -141,27 +140,44 @@
 	  $(id+' #add #delBtn').show();
 	  
   }
-
+  function onOrOffControls(id, controls, isOn, frm){
+	  $.each(controls, function(idx, item){
+		  if(isOn){
+			  $(id+' #'+item.id).show();
+			  $(id+' #'+item.id).attr('required', 'required');
+		  }else{
+			  if(frm !== undefined)
+				  frm[item.id].value = '';
+			  //$(id+' #'+item.id).removeAttr('name');
+			  $(id+' #'+item.id).hide();
+			  $(id+' #'+item.id).removeAttr('required');
+		  }
+	  });
+  }
+  function findControl(id, controls){
+	  var selected;
+	  $.each(controls, function(idx, item){
+		  if(id === item.id){
+			  selected = item;
+			  return true;
+		  }
+	  });
+	  return selected;
+  }
   function showViewStaff(){
+	  var searchBarData = [{'id':'sFirstName','title':'First Name', 'type':'text'}, {'id':'sBirthDate', 'title': 'Date Of Birth', 'type': 'date'}, {'id':'sMobile', 'title': 'Mobile Number', 'type': 'number'}];
+	  addSearchBar('stf', searchBarData, function(event){
+		onOrOffControls('#stf #enq', searchBarData, false, document.stfSearch);
+		onOrOffControls('#stf #enq', [findControl(event.target.value, searchBarData)], true, document.stfSearch);
+	  }, function(event){
+		  document.stfSearch.reportValidity();
+		  if(!document.stfSearch.checkValidity())
+			  return;
+		  Staff.get(document.stfSearch, searchBarData);
+	  });	  
 	$('#stf #add').hide();
 	$('#stf #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select sId, sFirstName, sLastName, sMail, sBirthDate, isDisabled, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName from staff', '/api/1/staff', function(responseData, status){
-	var staffData = responseData;
-	createTableFromJSON('#stf #enq', staffData, function(row, tableData){
-		var frmData = tableData[row];
-		if(frmData.isDisabled !== '0'){
-			$('#stf #add #isDisable input[type=checkbox]').attr('checked', 'checked');
-		}
-		$('#stf #newBtn').click();
-		addFillEntry('#stf', frmData, "Staff Details");
-		$('#stf #add #sId').attr('readOnly','readOnly');
-		$('#stf #add #isDisable').show(0);
-		
-		$('#stf #enq').hide();
-	});
-	}, function(responseData, status){
-		
-	});
+	Staff.get();
 }
 
   function loadBranchMaster(id){
@@ -233,12 +249,6 @@ function loadCityMaster(id){
 	}	
 }
 
-function loadEnqSales(){
-	var salesData = myBooks;
-	createTableFromJSON('showAllSales', salesData, function(row, tableData){
-		
-	});
-}
 function logoutLogin(){
 	location.reload();
 }
@@ -249,25 +259,9 @@ function logoutLogin(){
 		  return;
 	  var btntxt = event.innerText;
 	  if(btntxt === 'Create'){
-		  ApiService.post([document.packages], 'tour_package', '/api/1/tour_package', function(){
-			alert("Package Created Successfully.");
-			enquiryPkg();
-		  }, function(){
-			
-		  });
+		  TourPackage.add([document.packages], enquiryPkg);
 	  }else{
-		  ApiService.put([document.packages], ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Package Updated Successfully.");
-					 enquiryPkg();
-					 return;
-				 }
-			  }
-			  alert("Staff failed.");
-			  }, function(){
-				
-			  });		  
+		  TourPackage.modify([document.packages], enquiryPkg);
 	  }
   }
   function submitStaff(){
@@ -276,20 +270,8 @@ function logoutLogin(){
 		  return;	  
 	  var oprDesc = $('#stf #add #h').text();
 	  if('Create Staff' === oprDesc){
-		  
 		  document.staff.sPswd.value = document.staff.pswd.value;
-		  ApiService.post([document.staff], 'staff', '/api/1/staff', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Staff Created Successfully.");
-					 showViewStaff();
-					 return;
-				 }
-			  }
-			  alert("Staff failed.");
-			  }, function(){
-				
-			  });
+		  Staff.add([document.staff], showViewStaff);
 	  }else if('Staff Details' === oprDesc){
 		  var passwd = document.staff.pswd.value;
 		  if('******' !== passwd){
@@ -297,35 +279,24 @@ function logoutLogin(){
 		  }else{
 			  document.staff.sPswd.value = undefined;
 		  }
-		  ApiService.put([document.staff], ['sId'], 'staff', '/api/1/staff', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Staff Created Successfully.");
-					 showViewStaff();
-					 return;
-				 }
-			  }
-			  alert("Staff failed.");
-			  }, function(){
-				
-			  });		  
+		  Staff.modify([document.staff], showViewStaff);
 	  }
   }
 function enquiryDetails(){
+	  var searchBarData = [{'id':'client_name','title':'Contact Name', 'type':'text'}, 
+		  {'id':'date_of_Travel', 'title': 'Date Of Travel', 'type': 'date'},
+		  {'id':'email_id', 'title': 'Email', 'type': 'email'},
+		  {'id':'contact_number', 'title': 'Contact Number', 'type': 'number'}
+	  ];
+	  addSearchBar('sal', searchBarData, function(event){
+		onOrOffControls('#sal #enq', searchBarData, false);
+		onOrOffControls('#sal #enq', [findControl(event.target.value, searchBarData)], true);
+	  }, function(event){
+		  Sales.get(document.salSearch, searchBarData);
+	  });	
 	$('#sal #add').hide();
 	$('#sal #enq').show();
-	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
-	var staffData = responseData;
-	createTableFromJSON('#sal #enq', staffData, function(row, tableData){
-		var frmData = tableData[row];
-		$('#sal #newBtn').click();
-		addFillEntry('#sal', frmData, "SalesInquiry Details");
-		$('#sal #add #client_name').attr('readOnly','readOnly');
-		$('#sal #enq').hide();
-	});
-	}, function(responseData, status){
-		
-	});
+	Sales.get();
 }
 function submitSalesEnq(event){
 	  document.salesinq.reportValidity();
@@ -334,31 +305,9 @@ function submitSalesEnq(event){
 	var btntxt = event.innerText;
 	document.salesinq.sId.value = $('#userName').attr('userId');
 	  if(btntxt === 'Create'){
-		  ApiService.post([document.salesinq], 'sales', '/api/1/sales', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Sales Enquiry Created Successfully.");
-					 enquiryDetails();
-					 return;
-				 }
-			  }
-			  alert("Sales Enquiry Creation failed.");
-			  }, function(){
-				  alert("Sales Enquiry Creation failed.");
-			  });
+		  Sales.add([document.salesinq], enquiryDetails);
 	  }else{
-		  ApiService.put([document.salesinq], ['client_name'], 'sales', '/api/1/sales', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Sales Enquiry Updated Successfully.");
-					 enquiryDetails();
-					 return;
-				 }
-			  }
-			  alert("Sales Enquiry Update failed.");
-			  }, function(){
-				  alert("Sales Enquiry Update failed.");
-			  });		  
+		  Sales.modify([document.salesinq], enquiryDetails);
 	  }	  
 }
 function submitAlertBooking(event, ind){
@@ -400,31 +349,9 @@ function submitBooking(event, request){
 	var btntxt = event.innerText;
 	document.basicbooking.sId.value = $('#userName').attr('userId');
 	  if(btntxt === 'Create'){
-		  ApiService.post(request, 'bookings', '/api/1/bookings', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Booking Created Successfully.");
-					 bookingDetails();
-					 return;
-				 }
-			  }
-			  alert("Booking Creation failed.");
-			  }, function(){
-				  alert("Booking Creation failed.");
-			  });
+		  Booking.add(request, bookingDetails);
 	  }else{
-		  ApiService.put(request, ['client_name'], 'bookings', '/api/1/bookings', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Booking Updated Successfully.");
-					 bookingDetails();
-					 return;
-				 }
-			  }
-			  alert("Booking Update failed.");
-			  }, function(){
-				  alert("Booking Update failed.");
-			  });		  
+		  Booking.modify(request, bookingDetails);
 	  }	 	
 }
 
@@ -441,24 +368,31 @@ function loadPackageIds(){
 	}	  
 }
 function bookingDetails(){
+	  var searchBarData = [{'id':'Tour_Name','title':'Tour Name', 'type':'text'}, 
+		  {'id':'client_name', 'title': 'Client Name', 'type': 'text'},
+		  {'id':'email_id', 'title': 'Email', 'type': 'email'},
+		  {'id':'contact_number', 'title': 'Contact Number', 'type': 'number'}
+	  ];
+	  addSearchBar('booking', searchBarData, function(event){
+		onOrOffControls('#booking #enq', searchBarData, false, document.bookingSearch);
+		onOrOffControls('#booking #enq', [findControl(event.target.value, searchBarData)], true, document.bookingSearch);
+	  }, function(event){
+		  Booking.get([document.bookingSearch], searchBarData);
+	  });	
 	$('#booking #add').hide();
 	$('#booking #enq').show();
-	ApiService.getQuery(document.bookinginq, 'select Tour_Name, client_name, contact_number, email_id, destination, sHno, sStreet, sCity, sState, sZipCode from bookings', '/api/1/bookings', function(responseData, status){
-	var staffData = responseData;
-	createTableFromJSON('#booking #enq', staffData, function(row, tableData){
-		var frmData = tableData[row];
-		$('#booking #newBtn').click();
-		addFillEntry('#booking', frmData, "Booking Details");
-		$('#booking #add #client_name').attr('readOnly','readOnly');
-		$('#booking #enq').hide();
-		$('#PassportInfo').hide();
-		$('#BasicInfo').show();
-	});
-	}, function(responseData, status){
-		
-	});	
+	Booking.get();
 }
 function pmtDetails(){
+	  var searchBarData = [{'id':'date_of_query','title':'Date Of Query', 'type':'date'}, 
+		  {'id':'client_name', 'title': 'Client Name', 'type': 'text'},
+		  {'id':'email_id', 'title': 'Email', 'type': 'email'},
+		  {'id':'contact_number', 'title': 'Contact Number', 'type': 'number'}
+	  ];
+	  addSearchBar('pmt', searchBarData, function(event){
+		onOrOffControls('#pmt #enq', searchBarData, false);
+		onOrOffControls('#pmt #enq', [findControl(event.target.value, searchBarData)], true);
+	  });	
 	$('#pmt #add').hide();
 	$('#pmt #enq').show();
 	ApiService.getQuery(document.loginPanel, 'select date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks from sales', '/api/1/sales', function(responseData, status){
@@ -528,55 +462,22 @@ function loadNewEntryForm(moduleId, frmName, lblHdr, id, contrls){
 function deleteStaff(){
 	AlertDialog.show('Info', 'Are you sure?', function(event){
 	if(document.staff.sId.value.toLowerCase() === 'Admin'.toLowerCase()){
-		alert('Admin User Cannot be removed');
+		AlertDialog.show('Info', 'Admin User Cannot be removed');
 		showViewStaff();
 		return;
 	}
-  ApiService.remove(document.staff, ['sId'], 'staff', '/api/1/staff', function(responseData, status){
-	  if(responseData.length > 0 ){
-		 if(responseData[0]['record_count'] > 0){
-			 alert("Staff deletion Successfully.");
-			 showViewStaff();
-			 return;
-		 }
-	  }
-	  alert("Staff deletion failed.");
-	  }, function(){
-		  alert("Staff deletion failed.");
-	  });
+	Staff.remove(document.staff, showViewStaff);
 	}, function(event){});
 }
 function deletePackage(){
 	AlertDialog.show('Info', 'Are you sure?', function(event){
-  ApiService.remove(document.packages, ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
-	  if(responseData.length > 0 ){
-		 if(responseData[0]['record_count'] > 0){
-			 alert("Package deletion Successfully.");
-			 enquiryPkg();
-			 return;
-		 }
-	  }
-	  alert("Package deletion failed.");
-	  }, function(){
-		  alert("Package deletion failed.");
-	  });	
+		TourPackage.remove(document.packages, enquiryPkg);
 	}, function(event){});
 }
 function deleteSales(){
 	AlertDialog.show('Info', 'Are you sure?', function(event){
 		document.salesinq.sId.value = $('#userName').attr('userId');
-		  ApiService.remove(document.salesinq, ['client_name', 'sId'], 'sales', '/api/1/sales', function(responseData, status){
-			  if(responseData.length > 0 ){
-				 if(responseData[0]['record_count'] > 0){
-					 alert("Sales Inquiry deletion Successfully.");
-					 enquiryDetails();
-					 return;
-				 }
-			  }
-			  alert("Sales Inquiry deletion failed.");
-			  }, function(){
-				  alert("Sales Inquiry deletion failed.");
-			  });		
+		Sales.remove(document.salesinq, enquiryDetails);
 	}, function(event){});
 }
 function doForgotPswd(){
@@ -592,3 +493,243 @@ function doForgotPswd(){
 		}
 	}, function(responseData, status){});
 }
+$('#btnAuth').click(doLogin);
+function findFormData(id, formData){
+	formData.reportValidity();
+	  if(!formData.checkValidity())
+		  return;
+	  switch(id){
+	  	case 'pkg':
+	  		TourPackage.get(formData);
+	  		break;
+	  }
+}
+
+var TourPackage = {
+	add : function(data, callback){
+	  ApiService.post(data, 'tour_package', '/api/1/tour_package', function(){
+			AlertDialog.show('Info', 'Package Created Successfully.');
+			callback();
+		  }, function(){
+			
+		  });		
+	},
+	modify : function(data, callback){
+		  ApiService.put(data, ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 AlertDialog.show('Info', "Package Updated Successfully.");
+					 callback();
+					 return;
+				 }
+			  }
+			  AlertDialog.show('Error', "Staff failed.");
+			  }, function(){
+				
+			  });		
+	},
+	get : function(data, whereData){
+		$('#pkg #add').hide();
+		  ApiService.getQueryWithCrit(data, 'Tour_Id,Tour_Name, Gst_Number,Per,date_of_Travel,No_Of_Passengers,No_Of_Adult,No_Of_Child,Tour_Cost_Per_Adult,Tour_Cost_Per_Adult_With_Twin_Share_Base,Tour_Cost_Per_Adult_With_Triple_Share_Base,Child_With_Bed,Child_Without_Bed,infant_Cost,No_Of_days,countries_visiting,Description,Per_Child,Per_Adult,Per_Infant', whereData, 'tour_package', '/api/1/tour_package', function(responseData, status){
+			  var pkgs = responseData;
+			  if(pkgs.length > 0){
+			  $('#pkg #enq').show();
+			  var visibleCols = ['Tour_Name', 'date_of_Travel', 'No_Of_Passengers', 'No_Of_days'];
+			  createTableFromJSON('#pkg #enq', pkgs, function(row, tableData){
+				  $('#pkg #newBtn').click();
+				  $('#pkg #add #Tour_Name').attr('readOnly','readOnly');
+					addFillEntry('#pkg', tableData[row], "Package Details");
+					$('#pkg #enq').hide();
+				}, visibleCols);	
+			  }else{
+				  AlertDialog.show('Info', 'No Records Found.');
+			  }
+		  }, function(responseData, status){
+			  
+		  });		
+	},
+	remove : function(data, callback){
+	  ApiService.remove(data, ['Tour_Name'], 'tour_package', '/api/1/tour_package', function(responseData, status){
+		  if(responseData.length > 0 ){
+			 if(responseData[0]['record_count'] > 0){
+				 AlertDialog.show('Info', "Package deletion Successfully.");
+				 callback();
+				 return;
+			 }
+		  }
+		  AlertDialog.show('Error', "Package deletion failed.");
+		  }, function(){
+			  AlertDialog.show('Error', "Package deletion failed.");
+		  });		
+	}
+};
+var Staff = {
+	add : function(data, callback){
+		  ApiService.post(data, 'staff', '/api/1/staff', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 AlertDialog.show('Info', "Staff Created Successfully.");
+					 callback();
+					 return;
+				 }
+			  }
+			  AlertDialog.show('Error', "Staff failed.");
+			  }, function(){
+				
+			  });		
+	},
+	modify : function(data, callback){
+		  ApiService.put(data, ['sId'], 'staff', '/api/1/staff', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 AlertDialog.show('Info', "Staff Created Successfully.");
+					 callback();
+					 return;
+				 }
+			  }
+			  AlertDialog.show('Error', "Staff failed.");
+			  }, function(){
+				
+			  });		
+	},
+	get : function(data, whereData){
+		ApiService.getQueryWithCrit(data, 'sId, sFirstName, sLastName, sMail, sBirthDate, isDisabled, sMobile, sBranch, sHno, sStreet, sCity, sState, sZipCode, roleName', whereData, 'staff', '/api/1/staff', function(responseData, status){
+			var staffData = responseData;
+			createTableFromJSON('#stf #enq', staffData, function(row, tableData){
+				var frmData = tableData[row];
+				if(frmData.isDisabled !== '0'){
+					$('#stf #add #isDisable input[type=checkbox]').attr('checked', 'checked');
+				}
+				$('#stf #newBtn').click();
+				addFillEntry('#stf', frmData, "Staff Details");
+				$('#stf #add #sId').attr('readOnly','readOnly');
+				$('#stf #add #isDisable').show(0);
+				
+				$('#stf #enq').hide();
+			});
+			}, function(responseData, status){
+				
+			});		
+	},
+	remove : function(data, callback){
+	  ApiService.remove(data, ['sId'], 'staff', '/api/1/staff', function(responseData, status){
+		  if(responseData.length > 0 ){
+			 if(responseData[0]['record_count'] > 0){
+				 AlertDialog.show('Info', "Staff deletion Successfully.");
+				 callback();
+				 return;
+			 }
+		  }
+		  AlertDialog.show('Error', "Staff deletion failed.");
+		  }, function(){
+			  AlertDialog.show('Error', "Staff deletion failed.");
+		  });		
+	}
+};
+var Sales = {
+		add : function(data, callback){
+		  ApiService.post(data, 'sales', '/api/1/sales', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 AlertDialog.show('Info', "Sales Enquiry Created Successfully.");
+					 callback();
+					 return;
+				 }
+			  }
+			  AlertDialog.show('Error', "Sales Enquiry Creation failed.");
+			  }, function(){
+				  AlertDialog.show('Error', "Sales Enquiry Creation failed.");
+			  });			
+		},
+		modify : function(data, callback){
+		  ApiService.put(data, ['client_name'], 'sales', '/api/1/sales', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 AlertDialog.show('Info', "Sales Enquiry Updated Successfully.");
+					 callback();
+					 return;
+				 }
+			  }
+			  AlertDialog.show('Error', "Sales Enquiry Update failed.");
+			  }, function(){
+				  AlertDialog.show('Error', "Sales Enquiry Update failed.");
+			  });			
+		},
+		get : function(data, whereData){
+			ApiService.getQueryWithCrit(data, 'date_of_query, client_name, contact_number, email_id, destination, date_of_travel, current_status_of_the_query, expected_closure_date, remarks', whereData, 'sales', '/api/1/sales', function(responseData, status){
+				var staffData = responseData;
+				createTableFromJSON('#sal #enq', staffData, function(row, tableData){
+					var frmData = tableData[row];
+					$('#sal #newBtn').click();
+					addFillEntry('#sal', frmData, "SalesInquiry Details");
+					$('#sal #add #client_name').attr('readOnly','readOnly');
+					$('#sal #enq').hide();
+				});
+				}, function(responseData, status){
+					
+				});			
+		},
+		remove : function(data, callback){
+		  ApiService.remove(data, ['client_name', 'sId'], 'sales', '/api/1/sales', function(responseData, status){
+			  if(responseData.length > 0 ){
+				 if(responseData[0]['record_count'] > 0){
+					 AlertDialog.show('Info', "Sales Inquiry deletion Successfully.");
+					 callback();
+					 return;
+				 }
+			  }
+			  AlertDialog.show('Error', "Sales Inquiry deletion failed.");
+			  }, function(){
+				  AlertDialog.show('Error', "Sales Inquiry deletion failed.");
+			  });		
+		}
+};
+var Booking = {
+	add : function(data, callback){
+	  ApiService.post(data, 'bookings', '/api/1/bookings', function(responseData, status){
+		  if(responseData.length > 0 ){
+			 if(responseData[0]['record_count'] > 0){
+				 AlertDialog.show('Info', "Booking Created Successfully.");
+				 callback();
+				 return;
+			 }
+		  }
+		  AlertDialog.show('Error', "Booking Creation failed.");
+		  }, function(){
+			  AlertDialog.show('Error', "Booking Creation failed.");
+		  });		
+	},
+	modify : function(data, callback){
+	  ApiService.put(data, ['client_name'], 'bookings', '/api/1/bookings', function(responseData, status){
+		  if(responseData.length > 0 ){
+			 if(responseData[0]['record_count'] > 0){
+				 AlertDialog.show('Info', "Booking Updated Successfully.");
+				 callback();
+				 return;
+			 }
+		  }
+		  AlertDialog.show('Error', "Booking Update failed.");
+		  }, function(){
+			  AlertDialog.show('Error', "Booking Update failed.");
+		  });		
+	},
+	get : function(data, whereData){
+		ApiService.getQueryWithCrit(data, 'Tour_Name, client_name, contact_number, email_id, destination, sHno, sStreet, sCity, sState, sZipCode, Infant', whereData, 'bookings', '/api/1/bookings', function(responseData, status){
+			var staffData = responseData;
+			createTableFromJSON('#booking #enq', staffData, function(row, tableData){
+				var frmData = tableData[row];
+				$('#booking #newBtn').click();
+				addFillEntry('#booking', frmData, "Booking Details");
+				$('#booking #add #client_name').attr('readOnly','readOnly');
+				$('#booking #enq').hide();
+				$('#PassportInfo').hide();
+				$('#BasicInfo').show();
+			});
+			}, function(responseData, status){
+				
+			});			
+	},
+	remove : function(){
+		
+	}
+};
